@@ -4,6 +4,57 @@ Use o ID do template para referenciar a estrutura de output esperada em cada est
 
 ---
 
+## TMPL-000: Radar de Oportunidades
+**Estagio**: 0.0 | **Arquivo**: `0.0-radar-oportunidades.md`
+
+```markdown
+# Radar de Oportunidades — [Temas]
+
+**Data**: [data]
+**Temas recebidos**: [lista de termos do usuario]
+
+## Tendencias identificadas
+| # | Tendencia | Fonte | Relevancia para os temas |
+|---|-----------|-------|--------------------------|
+| 1 | [tendencia] | [publicacao, data] | [como conecta com os temas] |
+
+## Oportunidades
+
+### Oportunidade 1: [Titulo]
+- **Angulo**: [tecnologia | comportamento | regulacao | monetizacao | comunidade]
+- **Demanda**: [o que o mercado esta pedindo]
+- **Dor**: [problema concreto do segmento]
+- **Fontes**: [noticias, dados, reports com citacao]
+- **Segmento-alvo**: [PME | enterprise | consumidor — especificar nicho]
+- **Dominio**: [fintech | healthtech | edtech | sportstech | etc.]
+- **Potencial disruptivo**: [alto | medio | baixo]
+- **Por que agora**: [timing — o que mudou recentemente]
+- **Produto SaaS possivel**: [descricao em 1-2 frases]
+
+### Oportunidade 2: [Titulo]
+[mesma estrutura]
+
+### Oportunidade 3: [Titulo]
+[mesma estrutura]
+
+[adicionar mais se identificadas]
+
+## Matriz comparativa
+| Criterio | Opp 1 | Opp 2 | Opp 3 |
+|----------|-------|-------|-------|
+| Potencial disruptivo | [A/M/B] | [A/M/B] | [A/M/B] |
+| Timing de mercado | [A/M/B] | [A/M/B] | [A/M/B] |
+| Viabilidade tecnica | [A/M/B] | [A/M/B] | [A/M/B] |
+| Tamanho do mercado | [A/M/B] | [A/M/B] | [A/M/B] |
+| Competicao existente | [A/M/B] | [A/M/B] | [A/M/B] |
+
+## Recomendacao
+**Oportunidade mais promissora**: [titulo]
+**Justificativa**: [por que esta e a melhor aposta — baseada nos criterios acima]
+```
+
+---
+
 ## TMPL-001: Ficha da Oportunidade
 **Estagio**: 0.1 | **Arquivo**: `0.1-ficha-oportunidade.md`
 

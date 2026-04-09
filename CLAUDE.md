@@ -1,12 +1,18 @@
 # SaaS Product Workflow — Orquestrador
 
 ## Visao geral
-Workflow de 10 estagios para construcao de produtos SaaS AI-First.
+Workflow de 11 estagios para construcao de produtos SaaS AI-First.
 Cada estagio e um agente independente. O humano executa cada passo e decide quando avancar.
 
 ## Fluxo: Divergir e Convergir
 
 ```
+  EXPLORE (divergir em oportunidades)
+  ┌─────────────────────────────────────────┐
+  │ 0.0 Explorer                            │
+  │  (temas abstratos → oportunidades)      │
+  └──────────────────────┬──────────────────┘
+                         ▼
   DISCOVERY (convergir no problema)
   ┌─────────────────────────────────────────┐
   │ 0.1 Intake ──→ 0.2 Pesquisa ──→ 0.3 Framing │
@@ -41,7 +47,7 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
   ┌─────────────────────────────────────────┐
   │ 0.10 Aprendizado                        │
   │  Iterar → volta para 0.4               │
-  │  Pivotar → volta para 0.1              │
+  │  Pivotar → volta para 0.0 ou 0.1       │
   │  Escalar → volta para 0.6 (fase 2)     │
   │  Encerrar → fim                         │
   └─────────────────────────────────────────┘
@@ -51,7 +57,8 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
 
 | # | Agente | Modelo | Momento | Input | Output |
 |---|--------|--------|---------|-------|--------|
-| 0.1 | Intake | **haiku** | Convergir | Demanda bruta | Ficha + Hipotese |
+| 0.0 | Explorer | **sonnet** | **Divergir** | Temas abstratos | Radar de oportunidades |
+| 0.1 | Intake | **haiku** | Convergir | Resumo 0.0 ou demanda bruta | Ficha + Hipotese |
 | 0.2 | Pesquisa | **sonnet** | Convergir | Resumo 0.1 + dados | Evidencias + Mapa dores |
 | 0.3 | Framing | **sonnet** | Convergir | Resumo 0.2 | Problem statement + Metricas |
 | 0.4 | Ideacao | **sonnet** | **Divergir** | Resumo 0.3 | 3-5 alternativas + Conceito |
@@ -64,13 +71,26 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
 
 ## Como executar um estagio
 
-### Passo 1 — Primeiro estagio (0.1)
+### Passo 0 — Exploracao criativa (0.0, opcional)
+```
+Atue conforme o agente definido em agents/0.0-explorer/agent.md
+
+Temas: [termos ou interesses abstratos, ex: futebol, corrida, saude]
+```
+
+### Passo 1 — Intake (0.1)
 ```
 Atue conforme o agente definido em agents/0.1-intake/agent.md
 
 Produto: [descreva o SaaS]
 Demanda: [dor ou ideia]
 Dominio: [fintech, edtech, etc.]
+Segmento: [PME, enterprise, consumidor]
+```
+Se executou o 0.0, use o resumo compacto como input:
+```
+Leia o resumo em outputs/workflow/0.0-explorer/compact/
+Selecione a oportunidade [N] do radar
 ```
 
 ### Passo 2 — Estagios seguintes (0.2+)
@@ -111,7 +131,7 @@ agents/                              — Agentes (so configs)
   0.X-nome/agent.md
 
 docs-workflow/                       — Material de apoio para os agentes
-  templates/artifact-schemas.md      — Templates de artefatos (TMPL-001 a 027)
+  templates/artifact-schemas.md      — Templates de artefatos (TMPL-000 a 027)
   templates/artifact-summary-format.md — Formato de resumo entre estagios
   contexts/saas-concerns-checklist.md  — Multi-tenancy, seguranca, observabilidade
   contexts/dod-framework.md          — Criterios de qualidade

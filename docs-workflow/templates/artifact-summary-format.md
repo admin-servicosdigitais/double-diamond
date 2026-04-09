@@ -5,6 +5,17 @@ Use este formato para comprimir artefatos ao passar de um estagio para o proximo
 
 ---
 
+## Resumo 0.0 → entrada para 0.1
+
+```
+Temas explorados: [lista de termos do usuario]
+Oportunidade 1: [titulo] — Demanda: [demanda] | Dor: [dor] | Fonte: [fonte] | Segmento: [segmento] | Dominio: [dominio] | Potencial: [A/M/B]
+Oportunidade 2: [titulo] — Demanda: [demanda] | Dor: [dor] | Fonte: [fonte] | Segmento: [segmento] | Dominio: [dominio] | Potencial: [A/M/B]
+Oportunidade 3: [titulo] — Demanda: [demanda] | Dor: [dor] | Fonte: [fonte] | Segmento: [segmento] | Dominio: [dominio] | Potencial: [A/M/B]
+Recomendacao: [titulo da oportunidade mais promissora]
+Justificativa: [1-2 frases sobre por que esta e a melhor aposta]
+```
+
 ## Resumo 0.1 → entrada para 0.2
 
 ```
