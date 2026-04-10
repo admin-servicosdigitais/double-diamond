@@ -162,6 +162,75 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 
 ---
 
+## TMPL-002A: Matriz de Fontes Quantitativas
+**Estagio**: 0.1.5 | **Arquivo**: `0.1.5-fontes-quantitativas--{YYYYMMDD}--{slug}.md`
+
+```markdown
+# Matriz de Fontes Quantitativas — [Titulo da Oportunidade]
+
+**Referencia**: OPP-[ID]
+**Persona**: [persona]
+**Dominio**: [dominio]
+**Segmento**: [segmento]
+**Data**: [YYYY-MM-DD]
+
+## Queries utilizadas
+- [query 1 em PT]
+- [query 2 em EN]
+- [query 3 ...]
+
+## Fontes validadas
+| # | Fonte | Tipo | URL | Data | Autoridade | Metrica-chave extraida | Relevancia |
+|---|-------|------|-----|------|------------|------------------------|------------|
+| 1 | [nome publicacao] | report/dataset/benchmark/academico | [url] | [YYYY-MM] | A/M/B | [metrica = valor] | A/M/B |
+| 2 | ... | ... | ... | ... | ... | ... | ... |
+
+(minimo 8 fontes, pelo menos 3 tipos distintos)
+
+## Sintese quantitativa
+- [numero 1 mais relevante + fonte]
+- [numero 2 mais relevante + fonte]
+- [numero 3 mais relevante + fonte]
+- [numero 4 ...]
+- [numero 5 ...]
+
+## Lacunas
+- [o que nao foi possivel encontrar na web e precisa de pesquisa primaria]
+- [dados confidenciais/pagos sem preview]
+```
+
+---
+
+## TMPL-002B: Mapa de Acesso a Usuarios
+**Estagio**: 0.1.5 | **Arquivo**: `0.1.5-acesso-usuarios--{YYYYMMDD}--{slug}.md`
+
+```markdown
+# Mapa de Acesso a Usuarios — [Titulo da Oportunidade]
+
+**Referencia**: OPP-[ID]
+**Persona-alvo**: [persona]
+**Data**: [YYYY-MM-DD]
+
+## Canais identificados
+| # | Canal | Tipo | URL | Tamanho aproximado | Metodo de engajamento | Custo estimado | Relevancia |
+|---|-------|------|-----|--------------------|-----------------------|----------------|------------|
+| 1 | [nome] | subreddit/linkedin/discord/forum/plataforma-paga/newsletter | [url] | [N membros/assinantes] | post/DM/survey/entrevista paga | [R$ ou gratuito] | A/M/B |
+| 2 | ... | ... | ... | ... | ... | ... | ... |
+
+(minimo 5 canais, pelo menos 2 categorias)
+
+## Recomendacao de mix
+1. **[canal prioritario 1]** — [metodo] — [justificativa de por que comecar por aqui]
+2. **[canal prioritario 2]** — [metodo] — [justificativa]
+3. **[canal prioritario 3]** — [metodo] — [justificativa]
+
+## Restricoes observadas
+- [barreiras de entrada: moderacao, comunidades fechadas, custo, regras de self-promotion]
+- [consideracoes eticas: LGPD, consentimento, anonimato]
+```
+
+---
+
 ## TMPL-003: Plano de Pesquisa
 **Estagio**: 0.2 | **Arquivo**: `0.2-plano-pesquisa--{YYYYMMDD}--{slug}.md`
 

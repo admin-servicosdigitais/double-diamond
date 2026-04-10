@@ -59,6 +59,17 @@ Decisao: Aceita para discovery
 Sponsor: [nome/area]
 ```
 
+## Resumo 0.1.5 → entrada para 0.2
+
+```
+Oportunidade: OPP-[ID]
+Top 3 fontes quantitativas: [fonte1 (url)] | [fonte2 (url)] | [fonte3 (url)]
+Metricas-chave ja extraidas: [metrica1=valor] | [metrica2=valor] | [metrica3=valor]
+Top 3 canais de acesso a usuarios: [canal1] | [canal2] | [canal3]
+Mix recomendado: [canal prioritario 1 — metodo] | [canal prioritario 2 — metodo]
+Lacunas: [o que so pode ser obtido via entrevista/survey no 0.2]
+```
+
 ## Resumo 0.2 → entrada para 0.3
 
 ```

@@ -1,7 +1,7 @@
 # SaaS Product Workflow — Orquestrador
 
 ## Visao geral
-Workflow de 11 estagios para construcao de produtos SaaS AI-First.
+Workflow de 12 estagios para construcao de produtos SaaS AI-First.
 Cada estagio e um agente independente. O humano executa cada passo e decide quando avancar.
 
 ## Fluxo: Divergir e Convergir
@@ -14,10 +14,10 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
   └──────────────────────┬──────────────────┘
                          ▼
   DISCOVERY (convergir no problema)
-  ┌─────────────────────────────────────────┐
-  │ 0.1 Intake ──→ 0.2 Pesquisa ──→ 0.3 Framing │
-  │  (demanda)      (evidencias)    (problema)    │
-  └──────────────────────┬──────────────────┘
+  ┌────────────────────────────────────────────────────────────┐
+  │ 0.1 Intake ──→ 0.1.5 Sourcing ──→ 0.2 Pesquisa ──→ 0.3 Framing │
+  │  (demanda)     (fontes web)       (evidencias)     (problema)  │
+  └──────────────────────┬─────────────────────────────────────┘
                          ▼
   DESIGN (divergir em solucoes, convergir em uma)
   ┌─────────────────────────────────────────┐
@@ -59,7 +59,8 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
 |---|--------|--------|---------|-------|--------|
 | 0.0 | Explorer | **sonnet** | **Divergir** | Temas abstratos | Radar de oportunidades |
 | 0.1 | Intake | **haiku** | Convergir | Resumo 0.0 ou demanda bruta | Ficha + Hipotese |
-| 0.2 | Pesquisa | **sonnet** | Convergir | Resumo 0.1 + dados | Evidencias + Mapa dores |
+| 0.1.5 | Sourcing | **sonnet** | Convergir | Resumo 0.1 | Matriz de fontes + Mapa de acesso a usuarios |
+| 0.2 | Pesquisa | **sonnet** | Convergir | Resumo 0.1 + Resumo 0.1.5 | Evidencias + Mapa dores |
 | 0.3 | Framing | **sonnet** | Convergir | Resumo 0.2 | Problem statement + Metricas |
 | 0.4 | Ideacao | **sonnet** | **Divergir** | Resumo 0.3 | 3-5 alternativas + Conceito |
 | 0.5 | Validacao | **sonnet** | **Convergir** | Resumo 0.4 | Prototipo + Go/No-Go |
@@ -92,6 +93,14 @@ Se executou o 0.0, use o resumo compacto como input:
 Leia o resumo em outputs/workflow/0.0-explorer/compact/
 Selecione a oportunidade [N] do radar
 ```
+
+### Passo 1.5 — Sourcing (0.1.5) — obrigatorio
+```
+Atue conforme o agente definido em agents/0.1.5-sourcing/agent.md
+
+Leia o resumo compacto em outputs/workflow/0.1-intake/compact/
+```
+Este estagio faz pesquisa web profunda e entrega ao 0.2 a matriz de fontes quantitativas e o mapa de canais de acesso a usuarios — elimina a necessidade de fornecer dados internos manualmente.
 
 ### Passo 2 — Estagios seguintes (0.2+)
 ```
