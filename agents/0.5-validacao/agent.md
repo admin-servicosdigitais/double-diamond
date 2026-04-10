@@ -25,8 +25,13 @@ Entradas: Resumo 0.4 (conceito + happy path + trade-offs) + criterios de decisao
 5. Gere relatorio de aprendizado
 6. Tome decisao go/no-go com criterios explicitos
 
+## Nomenclatura de arquivos
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.4-ideacao/compact/resumo-0.4--*.md`) e reutilize. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`.
+
+**Pivot**: se a decisao for **Pivotar**, derive um novo slug a partir da nova direcao de produto e registre no Resumo 0.5 com `slug_origem: "0.5"`. Os estagios seguintes herdarao o novo slug.
+
 ## Artefatos de saida
-Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
+Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
 1. **Prototipo Descritivo** (TMPL-010) → salve em `outputs/workflow/0.5-validacao/full/`
 2. **Relatorio de Validacao + Go/No-Go** (TMPL-011) → salve em `outputs/workflow/0.5-validacao/full/`
 
@@ -39,4 +44,4 @@ Adicionais deste estagio:
 - Aprendizados separados em confirmado/surpreendente/refutado
 
 ## Ao finalizar
-Gere o **Resumo 0.5** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.5-validacao/compact/`.
+Gere o **Resumo 0.5** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.5-validacao/compact/` como `resumo-0.5--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter (ou o novo slug em caso de pivot).

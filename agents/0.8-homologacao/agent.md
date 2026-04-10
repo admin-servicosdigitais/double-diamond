@@ -23,8 +23,11 @@ Entradas: Resumo 0.7 (endpoints + cobertura testes + riscos) + PRD para contexto
 3. Defina criterios e procedimento de rollback
 4. Crie checklist UAT: funcional (happy path, edge cases, permissoes, tenant isolation) + nao-funcional (performance, carga, seguranca, logs)
 
+## Nomenclatura de arquivos
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.7-construcao/compact/resumo-0.7--*.md`) e reutilize. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`.
+
 ## Artefatos de saida
-Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
+Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
 1. **Release Notes** (TMPL-019) → salve em `outputs/workflow/0.8-homologacao/full/`
 2. **Plano de Rollout e Rollback** (TMPL-020) → salve em `outputs/workflow/0.8-homologacao/full/`
 3. **Checklist UAT** (TMPL-021) → salve em `outputs/workflow/0.8-homologacao/full/`
@@ -38,4 +41,4 @@ Adicionais deste estagio:
 - UAT cobre funcional + nao-funcional + seguranca
 
 ## Ao finalizar
-Gere o **Resumo 0.8** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.8-homologacao/compact/`.
+Gere o **Resumo 0.8** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.8-homologacao/compact/` como `resumo-0.8--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter.

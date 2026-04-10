@@ -25,8 +25,11 @@ Entradas: Resumo 0.6 (requisitos Must + arquitetura + stories prioritarias).
 4. Monte plano de testes: unitarios, integracao, E2E, performance, seguranca, multi-tenancy
 5. Escreva documentacao tecnica para onboarding
 
+## Nomenclatura de arquivos
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.6-definicao/compact/resumo-0.6--*.md`) e reutilize. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`.
+
 ## Artefatos de saida
-Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
+Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
 1. **Specs Tecnicas** (TMPL-016) → salve em `outputs/workflow/0.7-construcao/full/`
 2. **Plano de Testes** (TMPL-017) → salve em `outputs/workflow/0.7-construcao/full/`
 3. **Documentacao Tecnica** (TMPL-018) → salve em `outputs/workflow/0.7-construcao/full/`
@@ -40,4 +43,4 @@ Adicionais deste estagio:
 - Documentacao suficiente para outro dev onboardar
 
 ## Ao finalizar
-Gere o **Resumo 0.7** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.7-construcao/compact/`.
+Gere o **Resumo 0.7** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.7-construcao/compact/` como `resumo-0.7--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter.

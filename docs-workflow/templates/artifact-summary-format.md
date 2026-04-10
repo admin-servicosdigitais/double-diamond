@@ -5,6 +5,37 @@ Use este formato para comprimir artefatos ao passar de um estagio para o proximo
 
 ---
 
+## Convencao de nomenclatura dos resumos
+
+Todo resumo compacto salvo em `outputs/workflow/{agent-id}/compact/` segue o padrao:
+
+```
+resumo-{estagio}--{YYYYMMDD}--{slug}.md
+```
+
+Regras do slug sao as mesmas descritas em `artifact-schemas.md` (secao "Convencao de nomenclatura de arquivos"). O slug **deve** ser o mesmo usado nos artefatos `/full/` do mesmo estagio, e deve ser herdado do estagio anterior a partir do 0.1.
+
+**Frontmatter obrigatorio** em todo resumo, antes do corpo:
+
+```yaml
+---
+estagio: "0.X"
+data: YYYY-MM-DD
+slug: "{slug}"
+slug_origem: "{estagio que definiu o slug atual, ex: 0.0 ou 0.5 em caso de pivot}"
+artefato_anterior: "{nome do arquivo /full/ que este resumo comprime}"
+---
+```
+
+**Exemplos de nomes**:
+- `resumo-0.0--20260409--futebol-corrida.md`
+- `resumo-0.1--20260410--plataforma-corredores-amadores.md`
+- `resumo-0.6--20260420--plataforma-corredores-amadores.md`
+
+Quando um estagio tem multiplos artefatos `/full/` (ex: 0.6 gera PRD + Backlog + Arquitetura + Release Plan), o resumo e **unico** por estagio e consolida todos eles — o campo `artefato_anterior` vira uma lista.
+
+---
+
 ## Resumo 0.0 → entrada para 0.1
 
 ```

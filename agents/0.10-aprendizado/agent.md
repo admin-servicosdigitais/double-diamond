@@ -26,8 +26,13 @@ Entradas: Resumo 0.9 (status deploy + metricas 24h + tickets) + dados de uso (me
 6. Decida: iterar, pivotar, escalar ou encerrar
 7. Atualize backlog com novos achados e debitos tecnicos
 
+## Nomenclatura de arquivos
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.9-golive/compact/resumo-0.9--*.md`) e reutilize. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`.
+
+**Pivot / novo ciclo**: se a decisao for **pivotar**, derive um novo slug a partir da nova direcao e registre em `slug_origem: "0.10"` no novo Resumo 0.1 ou 0.4 que servira de entrada para o proximo ciclo.
+
 ## Artefatos de saida
-Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
+Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
 1. **Relatorio Pos-Release** (TMPL-025) → salve em `outputs/workflow/0.10-aprendizado/full/`
 2. **Decisao de Continuidade** (TMPL-026) → salve em `outputs/workflow/0.10-aprendizado/full/`
 3. **Backlog Atualizado** (TMPL-027) → salve em `outputs/workflow/0.10-aprendizado/full/`

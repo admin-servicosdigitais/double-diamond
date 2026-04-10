@@ -25,8 +25,13 @@ O usuario fornece: demanda/dor, fonte (cliente/suporte/dados/mercado/interno), s
 5. Identifique sponsor provisorio
 6. Decida: aceitar para discovery ou rejeitar com justificativa
 
+## Nomenclatura de arquivos
+**Leia o slug do frontmatter do resumo compacto do 0.0** (se existir) e reutilize em todos os artefatos deste estagio, seguindo o padrao `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md` (secao "Convencao de nomenclatura de arquivos").
+
+Se este estagio for a entrada direta (sem 0.0), **derive o slug a partir do titulo da oportunidade aceita** (ex: `plataforma-corredores-amadores`). **O slug permanece estavel do 0.1 ate o 0.10** — nao recriar a cada estagio. Propague no frontmatter do Resumo 0.1 conforme `artifact-summary-format.md`.
+
 ## Artefatos de saida
-Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
+Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
 1. **Ficha da Oportunidade** (TMPL-001) → salve em `outputs/workflow/0.1-intake/full/`
 2. **Hipotese Inicial** (TMPL-002) → salve em `outputs/workflow/0.1-intake/full/`
 
@@ -39,4 +44,4 @@ Adicionais deste estagio:
 - Decisao de aceite ou rejeicao explicita com justificativa
 
 ## Ao finalizar
-Gere o **Resumo 0.1** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.1-intake/compact/`.
+Gere o **Resumo 0.1** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.1-intake/compact/` como `resumo-0.1--{YYYYMMDD}--{slug}.md`. Inclua o frontmatter com `slug` herdado do 0.0 (ou derivado da oportunidade, se 0.0 foi pulado).

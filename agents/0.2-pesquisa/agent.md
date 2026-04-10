@@ -25,8 +25,11 @@ Entradas: Resumo 0.1 (oportunidade + hipotese) + dados disponiveis (metricas, ti
 5. Priorize dores por frequencia x severidade x valor de negocio
 6. Registre incertezas remanescentes
 
+## Nomenclatura de arquivos
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.1-intake/compact/resumo-0.1--*.md`) e reutilize em todos os artefatos deste estagio. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`. **O slug permanece estavel ate o 0.10** — nao recriar.
+
 ## Artefatos de saida
-Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
+Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
 1. **Plano de Pesquisa** (TMPL-003) → salve em `outputs/workflow/0.2-pesquisa/full/`
 2. **Evidencias Consolidadas** (TMPL-004) → salve em `outputs/workflow/0.2-pesquisa/full/`
 3. **Mapa de Dores** (TMPL-005) → salve em `outputs/workflow/0.2-pesquisa/full/`
@@ -41,4 +44,4 @@ Adicionais deste estagio:
 - Nenhuma conclusao sem evidencia correspondente
 
 ## Ao finalizar
-Gere o **Resumo 0.2** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.2-pesquisa/compact/`.
+Gere o **Resumo 0.2** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.2-pesquisa/compact/` como `resumo-0.2--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter.

@@ -4,8 +4,41 @@ Use o ID do template para referenciar a estrutura de output esperada em cada est
 
 ---
 
+## Convencao de nomenclatura de arquivos
+
+Todo artefato salvo em `outputs/workflow/{agent-id}/full/` e `/compact/` **deve** seguir o padrao:
+
+```
+{estagio}-{artefato}--{YYYYMMDD}--{slug}.md
+```
+
+**Componentes**:
+- `{estagio}` — identificador do estagio (`0.0`, `0.1`, ..., `0.10`)
+- `{artefato}` — nome canonico do artefato em kebab-case (ex: `radar-oportunidades`, `prd`, `arquitetura`)
+- `{YYYYMMDD}` — data de criacao do artefato (ex: `20260409`)
+- `{slug}` — identificador humano-legivel do contexto da execucao
+
+**Regras do slug**:
+- Lowercase, ASCII puro (sem acentos), espacos e pontuacao substituidos por `-`
+- Maximo de 40 caracteres — truncar preservando palavras inteiras
+- **Origem**:
+  - Em `0.0`: derivado dos temas recebidos do usuario (ex: `futebol-corrida`)
+  - Em `0.1` em diante: derivado do **titulo da oportunidade escolhida** no 0.0 (ou do nome do produto quando ja definido). O slug **permanece estavel** do 0.1 ate o 0.10 — **nao recriar a cada estagio**
+- **Herança**: cada estagio le o slug do resumo compacto do estagio anterior (campo `slug:` no frontmatter do resumo) e reutiliza. Se o slug mudar (ex: pivot no 0.5), registrar explicitamente no resumo e usar o novo a partir dali
+
+**Colisao**: se ja existir arquivo com mesmo nome no mesmo dia, adicionar sufixo `-HHMM` apos a data (ex: `--20260409-1430--`).
+
+**Exemplos**:
+- `0.0-radar-oportunidades--20260409--futebol-corrida.md`
+- `0.1-ficha-oportunidade--20260410--plataforma-corredores-amadores.md`
+- `0.6-prd--20260420--plataforma-corredores-amadores.md`
+
+Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e `{slug}` — substitua ao gerar o artefato.
+
+---
+
 ## TMPL-000: Radar de Oportunidades
-**Estagio**: 0.0 | **Arquivo**: `0.0-radar-oportunidades.md`
+**Estagio**: 0.0 | **Arquivo**: `0.0-radar-oportunidades--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Radar de Oportunidades — [Temas]
@@ -22,14 +55,24 @@ Use o ID do template para referenciar a estrutura de output esperada em cada est
 
 ### Oportunidade 1: [Titulo]
 - **Angulo**: [tecnologia | comportamento | regulacao | monetizacao | comunidade]
+- **Tipo de mercado**: [massa | nicho/alternativo] — oportunidades de nicho sao preferidas
+- **Perfil de crescimento**: [gradual/bootstrap-friendly | moderado | hypergrowth]
 - **Demanda**: [o que o mercado esta pedindo]
 - **Dor**: [problema concreto do segmento]
-- **Fontes**: [noticias, dados, reports com citacao]
-- **Segmento-alvo**: [PME | enterprise | consumidor — especificar nicho]
+- **Fontes**: [minimo 7 — noticias, dados, reports, foruns com citacao]
+- **Segmento-alvo**: [PME | enterprise | consumidor | prosumer | micro-SMB — especificar nicho]
 - **Dominio**: [fintech | healthtech | edtech | sportstech | etc.]
 - **Potencial disruptivo**: [alto | medio | baixo]
 - **Por que agora**: [timing — o que mudou recentemente]
 - **Produto SaaS possivel**: [descricao em 1-2 frases]
+
+#### Concorrentes (minimo 5-7)
+| # | Nome | URL | Modelo | Estagio | Proposta de valor | Gap observado |
+|---|------|-----|--------|---------|-------------------|---------------|
+| 1 | [nome] | [url] | [SaaS/marketplace/API/etc] | [bootstrap/seed/A+/publico] | [diferencial] | [o que nao cobrem] |
+| 2 | ... | ... | ... | ... | ... | ... |
+
+**Sintese competitiva**: [onde estao os gaps agregados, qual flanco esta aberto para um entrante pequeno]
 
 ### Oportunidade 2: [Titulo]
 [mesma estrutura]
@@ -42,11 +85,13 @@ Use o ID do template para referenciar a estrutura de output esperada em cada est
 ## Matriz comparativa
 | Criterio | Opp 1 | Opp 2 | Opp 3 |
 |----------|-------|-------|-------|
-| Potencial disruptivo | [A/M/B] | [A/M/B] | [A/M/B] |
-| Timing de mercado | [A/M/B] | [A/M/B] | [A/M/B] |
-| Viabilidade tecnica | [A/M/B] | [A/M/B] | [A/M/B] |
-| Tamanho do mercado | [A/M/B] | [A/M/B] | [A/M/B] |
-| Competicao existente | [A/M/B] | [A/M/B] | [A/M/B] |
+| Potencial disruptivo | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] |
+| Timing de mercado | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] |
+| Viabilidade tecnica | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] |
+| Tamanho do mercado | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] |
+| Competicao existente | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] |
+| Viabilidade de crescimento gradual (bootstrap) | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] |
+| Densidade de nicho (subatendido) | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] |
 
 ## Recomendacao
 **Oportunidade mais promissora**: [titulo]
@@ -56,7 +101,7 @@ Use o ID do template para referenciar a estrutura de output esperada em cada est
 ---
 
 ## TMPL-001: Ficha da Oportunidade
-**Estagio**: 0.1 | **Arquivo**: `0.1-ficha-oportunidade.md`
+**Estagio**: 0.1 | **Arquivo**: `0.1-ficha-oportunidade--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Ficha da Oportunidade — [Titulo]
@@ -90,7 +135,7 @@ Use o ID do template para referenciar a estrutura de output esperada em cada est
 ---
 
 ## TMPL-002: Hipotese Inicial
-**Estagio**: 0.1 | **Arquivo**: `0.1-hipotese-inicial.md`
+**Estagio**: 0.1 | **Arquivo**: `0.1-hipotese-inicial--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Hipotese Inicial — [Titulo da Oportunidade]
@@ -118,7 +163,7 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 ---
 
 ## TMPL-003: Plano de Pesquisa
-**Estagio**: 0.2 | **Arquivo**: `0.2-plano-pesquisa.md`
+**Estagio**: 0.2 | **Arquivo**: `0.2-plano-pesquisa--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Plano de Pesquisa — [Titulo]
@@ -143,7 +188,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-004: Evidencias Consolidadas
-**Estagio**: 0.2 | **Arquivo**: `0.2-evidencias.md`
+**Estagio**: 0.2 | **Arquivo**: `0.2-evidencias--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Evidencias — [Titulo]
@@ -169,7 +214,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-005: Mapa de Dores
-**Estagio**: 0.2 | **Arquivo**: `0.2-mapa-dores.md`
+**Estagio**: 0.2 | **Arquivo**: `0.2-mapa-dores--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Mapa de Dores — [Titulo]
@@ -182,7 +227,7 @@ Consideraremos a pesquisa suficiente quando:
 ## Dores priorizadas
 | # | Dor | Frequencia | Severidade | Valor negocio | Score |
 |---|-----|-----------|------------|---------------|-------|
-| 1 | [dor] | [A/M/B] | [A/M/B] | [A/M/B] | [H/M/L] |
+| 1 | [dor] | [5/4/3/2/1] | [5/4/3/2/1] | [5/4/3/2/1] | [H/M/L] |
 
 ## Incertezas remanescentes
 1. [o que ainda nao sabemos]
@@ -192,7 +237,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-006: Problem Statement
-**Estagio**: 0.3 | **Arquivo**: `0.3-problem-statement.md`
+**Estagio**: 0.3 | **Arquivo**: `0.3-problem-statement--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Problem Statement — [Titulo]
@@ -223,7 +268,7 @@ Se resolvermos [X], esperamos que [Y] mude em [Z] porque [evidencia].
 ---
 
 ## TMPL-007: Metricas de Sucesso
-**Estagio**: 0.3 | **Arquivo**: `0.3-metricas-sucesso.md`
+**Estagio**: 0.3 | **Arquivo**: `0.3-metricas-sucesso--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Metricas de Sucesso — [Titulo]
@@ -260,7 +305,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-008: Alternativas de Solucao
-**Estagio**: 0.4 | **Arquivo**: `0.4-alternativas.md`
+**Estagio**: 0.4 | **Arquivo**: `0.4-alternativas--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Alternativas de Solucao — [Titulo]
@@ -294,7 +339,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-009: Conceito Escolhido
-**Estagio**: 0.4 | **Arquivo**: `0.4-conceito-escolhido.md`
+**Estagio**: 0.4 | **Arquivo**: `0.4-conceito-escolhido--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Conceito Escolhido — [Titulo]
@@ -325,13 +370,13 @@ A solucao sera considerada bem-sucedida se:
 ## Riscos do conceito escolhido
 | Risco | Probabilidade | Impacto | Mitigacao |
 |-------|--------------|---------|-----------|
-| [risco] | [A/M/B] | [A/M/B] | [como reduzir] |
+| [risco] | [5/4/3/2/1] | [5/4/3/2/1] | [como reduzir] |
 ```
 
 ---
 
 ## TMPL-010: Prototipo Descritivo
-**Estagio**: 0.5 | **Arquivo**: `0.5-prototipo.md`
+**Estagio**: 0.5 | **Arquivo**: `0.5-prototipo--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Prototipo — [Titulo]
@@ -363,7 +408,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-011: Relatorio de Validacao
-**Estagio**: 0.5 | **Arquivo**: `0.5-relatorio-teste.md`
+**Estagio**: 0.5 | **Arquivo**: `0.5-relatorio-teste--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Relatorio de Validacao — [Titulo]
@@ -397,7 +442,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-012: PRD
-**Estagio**: 0.6 | **Arquivo**: `0.6-prd.md`
+**Estagio**: 0.6 | **Arquivo**: `0.6-prd--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # PRD — [Nome da Feature]
@@ -437,7 +482,7 @@ A solucao sera considerada bem-sucedida se:
 ## Riscos e dependencias
 | Risco/Dependencia | Impacto | Mitigacao |
 |-------------------|---------|-----------|
-| [item] | [A/M/B] | [acao] |
+| [item] | [5/4/3/2/1] | [acao] |
 
 ## Release strategy
 - **Fase 1 (MVP)**: [o que entra]
@@ -448,7 +493,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-013: Backlog Priorizado
-**Estagio**: 0.6 | **Arquivo**: `0.6-backlog.md`
+**Estagio**: 0.6 | **Arquivo**: `0.6-backlog--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Backlog — [Nome da Feature]
@@ -473,7 +518,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-014: Arquitetura-alvo
-**Estagio**: 0.6 | **Arquivo**: `0.6-arquitetura.md`
+**Estagio**: 0.6 | **Arquivo**: `0.6-arquitetura--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Arquitetura — [Nome da Feature]
@@ -501,7 +546,7 @@ Aplique as diretrizes de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-015: Release Plan
-**Estagio**: 0.6 | **Arquivo**: `0.6-release-plan.md`
+**Estagio**: 0.6 | **Arquivo**: `0.6-release-plan--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Release Plan — [Nome da Feature]
@@ -529,7 +574,7 @@ Aplique as diretrizes de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-016: Specs Tecnicas
-**Estagio**: 0.7 | **Arquivo**: `0.7-specs-tecnicas.md`
+**Estagio**: 0.7 | **Arquivo**: `0.7-specs-tecnicas--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Specs Tecnicas — [Nome da Feature]
@@ -562,7 +607,7 @@ Aplique as diretrizes de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-017: Plano de Testes
-**Estagio**: 0.7 | **Arquivo**: `0.7-plano-testes.md`
+**Estagio**: 0.7 | **Arquivo**: `0.7-plano-testes--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Plano de Testes — [Nome da Feature]
@@ -592,7 +637,7 @@ Aplique os cenarios de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-018: Documentacao Tecnica
-**Estagio**: 0.7 | **Arquivo**: `0.7-doc-tecnica.md`
+**Estagio**: 0.7 | **Arquivo**: `0.7-doc-tecnica--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Doc Tecnica — [Nome da Feature]
@@ -625,7 +670,7 @@ Aplique os cenarios de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-019: Release Notes
-**Estagio**: 0.8 | **Arquivo**: `0.8-release-notes.md`
+**Estagio**: 0.8 | **Arquivo**: `0.8-release-notes--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Release Notes — [Feature] v[X.Y.Z]
@@ -653,7 +698,7 @@ Aplique os cenarios de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-020: Plano de Rollout e Rollback
-**Estagio**: 0.8 | **Arquivo**: `0.8-rollout-rollback.md`
+**Estagio**: 0.8 | **Arquivo**: `0.8-rollout-rollback--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Plano de Rollout — [Feature]
@@ -681,7 +726,7 @@ Reverter imediatamente se:
 ---
 
 ## TMPL-021: Checklist UAT
-**Estagio**: 0.8 | **Arquivo**: `0.8-checklist-uat.md`
+**Estagio**: 0.8 | **Arquivo**: `0.8-checklist-uat--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Checklist de Homologacao — [Feature]
@@ -711,7 +756,7 @@ Reverter imediatamente se:
 ---
 
 ## TMPL-022: Checklist de Producao
-**Estagio**: 0.9 | **Arquivo**: `0.9-checklist-producao.md`
+**Estagio**: 0.9 | **Arquivo**: `0.9-checklist-producao--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Checklist Go-Live — [Feature]
@@ -746,7 +791,7 @@ Reverter imediatamente se:
 ---
 
 ## TMPL-023: Playbook de Suporte
-**Estagio**: 0.9 | **Arquivo**: `0.9-playbook-suporte.md`
+**Estagio**: 0.9 | **Arquivo**: `0.9-playbook-suporte--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Playbook de Suporte — [Feature]
@@ -773,7 +818,7 @@ Reverter imediatamente se:
 ---
 
 ## TMPL-024: Comunicacao aos Usuarios
-**Estagio**: 0.9 | **Arquivo**: `0.9-comunicacao.md`
+**Estagio**: 0.9 | **Arquivo**: `0.9-comunicacao--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Comunicacao de Lancamento — [Feature]
@@ -803,7 +848,7 @@ Ola [nome],
 ---
 
 ## TMPL-025: Relatorio Pos-Release
-**Estagio**: 0.10 | **Arquivo**: `0.10-relatorio-pos-release.md`
+**Estagio**: 0.10 | **Arquivo**: `0.10-relatorio-pos-release--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Relatorio Pos-Release — [Feature]
@@ -842,7 +887,7 @@ Ola [nome],
 ---
 
 ## TMPL-026: Decisao de Continuidade
-**Estagio**: 0.10 | **Arquivo**: `0.10-decisao-continuidade.md`
+**Estagio**: 0.10 | **Arquivo**: `0.10-decisao-continuidade--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Decisao de Continuidade — [Feature]
@@ -871,7 +916,7 @@ Ola [nome],
 ---
 
 ## TMPL-027: Backlog Atualizado
-**Estagio**: 0.10 | **Arquivo**: `0.10-backlog-atualizado.md`
+**Estagio**: 0.10 | **Arquivo**: `0.10-backlog-atualizado--{YYYYMMDD}--{slug}.md`
 
 ```markdown
 # Backlog Atualizado — [Feature]

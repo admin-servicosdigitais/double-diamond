@@ -22,8 +22,11 @@ Entradas: Resumo 0.8 (status UAT + feature flags + rollout plan + criterios roll
 2. Monte playbook de suporte: problemas esperados com acoes, FAQ, criterios de escalacao por severidade
 3. Crie comunicacao: in-app notification + email de lancamento + enablement interno (CS/Vendas)
 
+## Nomenclatura de arquivos
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.8-homologacao/compact/resumo-0.8--*.md`) e reutilize. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`.
+
 ## Artefatos de saida
-Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
+Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
 1. **Checklist de Producao** (TMPL-022) → salve em `outputs/workflow/0.9-golive/full/`
 2. **Playbook de Suporte** (TMPL-023) → salve em `outputs/workflow/0.9-golive/full/`
 3. **Comunicacao aos Usuarios** (TMPL-024) → salve em `outputs/workflow/0.9-golive/full/`
@@ -36,4 +39,4 @@ Adicionais deste estagio:
 - Comunicacao existe para usuario final E time interno
 
 ## Ao finalizar
-Gere o **Resumo 0.9** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.9-golive/compact/`.
+Gere o **Resumo 0.9** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.9-golive/compact/` como `resumo-0.9--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter.
