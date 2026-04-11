@@ -129,11 +129,6 @@ Leia o resumo em outputs/workflow/0.5-validacao/compact/
 ```
 O agente detecta dinamicamente os tipos de usuario com fluxo proprio no protótipo e gera um HTML single-file clicavel (Tailwind Play CDN + Alpine.js) por tipo. Os HTMLs vao para `outputs/workflow/0.5.5-prototype-visual/full/`. **Este estagio nao altera o input do 0.6** — o 0.6 continua consumindo o Resumo 0.5 intacto.
 
-### Passo 3 — Consultar exemplo (opcional)
-```
-Leia docs-workflow/examples/fintech/0.4-ideacao.md como referencia
-```
-
 ## Onde ficam os outputs
 
 Cada agente salva seus artefatos em:
@@ -148,7 +143,6 @@ O proximo agente le apenas o `/compact/` do anterior. O `/full/` e para consulta
 2. **Nunca cole artefatos completos** entre estagios — use o resumo em `outputs/workflow/{agent-id}/compact/`
 3. **Templates de output** estao em `docs-workflow/templates/artifact-schemas.md` — agente referencia por ID
 4. **Concerns SaaS** estao em `docs-workflow/contexts/saas-concerns-checklist.md` — carregados apenas em 0.4+
-5. **Exemplos** sao carregados sob demanda via `docs-workflow/examples/index.md`
 
 ## Estrutura de pastas
 
@@ -161,9 +155,6 @@ docs-workflow/                       — Material de apoio para os agentes
   templates/artifact-summary-format.md — Formato de resumo entre estagios
   contexts/saas-concerns-checklist.md  — Multi-tenancy, seguranca, observabilidade
   contexts/dod-framework.md          — Criterios de qualidade
-  examples/index.md                  — Indice de exemplos (few-shot)
-  examples/fintech/                  — Exemplos fintech
-  examples/edtech/                   — Exemplos edtech
 
 outputs/workflow/                    — Outputs gerados (gestao de estado)
   0.X-nome/full/                     — Artefatos completos
