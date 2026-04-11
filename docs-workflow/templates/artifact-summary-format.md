@@ -117,6 +117,34 @@ Ajustes ao conceito: [1-3 ajustes]
 Restricoes descobertas: [se houver]
 ```
 
+## Resumo 0.5.5 → registro lateral (NAO alimenta proximo estagio)
+
+O estagio 0.5.5 (prototipo visual para stakeholders) gera HTMLs clicaveis como side-artifact. Seu resumo compacto existe apenas para trackeabilidade e referencia cruzada — **nao e consumido pelo 0.6**. O 0.6 continua lendo apenas o Resumo 0.5 intacto.
+
+Use este formato no arquivo `outputs/workflow/0.5.5-prototype-visual/compact/resumo-0.5.5--{YYYYMMDD}--{slug}.md`:
+
+```
+Oportunidade: OPP-[ID]
+Tipos de usuario mapeados: [tipo1 (N telas), tipo2 (M telas), ...]
+HTMLs gerados: [lista de caminhos relativos completos]
+Design tokens principais: primary=[hex], secondary=[hex], acento=[hex]
+Ajustes must incorporados: [lista 1-3 linhas descrevendo como cada ajuste aparece no HTML]
+Como apresentar: [dica curta, ex: "abrir cada HTML no Chrome com DevTools > Toggle device toolbar no iPhone SE"]
+Fonte: 0.5-prototipo--{YYYYMMDD}--{slug}.md + 0.5-relatorio-teste--{YYYYMMDD}--{slug}.md
+```
+
+**Frontmatter obrigatorio** (alem dos campos padrao do summary):
+```yaml
+---
+estagio: "0.5.5"
+data: YYYY-MM-DD
+slug: "{slug}"
+slug_origem: "{estagio que definiu o slug}"
+artefato_anterior: ["0.5-prototipo--...md", "0.5-relatorio-teste--...md"]
+entrada_para: "nenhum (side-note)"
+---
+```
+
 ## Resumo 0.6 → entrada para 0.7
 
 ```

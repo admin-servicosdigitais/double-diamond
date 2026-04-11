@@ -28,9 +28,16 @@ Todo artefato salvo em `outputs/workflow/{agent-id}/full/` e `/compact/` **deve*
 
 **Colisao**: se ja existir arquivo com mesmo nome no mesmo dia, adicionar sufixo `-HHMM` apos a data (ex: `--20260409-1430--`).
 
+**Excecao — estagio 0.5.5 (prototipo visual HTML)**: o padrao ganha um segmento `{tipo}` para diferenciar os HTMLs por tipo de usuario:
+```
+0.5.5-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html
+```
+O `{tipo}` e detectado dinamicamente pelo agente 0.5.5 a partir dos fluxos descritos no protótipo 0.5 (ex: `doador`, `coordenador`, `professor`). Ver TMPL-011.5.
+
 **Exemplos**:
 - `0.0-radar-oportunidades--20260409--futebol-corrida.md`
 - `0.1-ficha-oportunidade--20260410--plataforma-corredores-amadores.md`
+- `0.5.5-prototipo-visual--doador--20260410--saude-hematologia-sangue.html`
 - `0.6-prd--20260420--plataforma-corredores-amadores.md`
 
 Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e `{slug}` — substitua ao gerar o artefato.
@@ -507,6 +514,61 @@ A solucao sera considerada bem-sucedida se:
 ## Ajustes recomendados ao conceito
 1. [ajuste baseado em aprendizado]
 ```
+
+---
+
+## TMPL-011.5: Prototipo Visual Clicavel (HTML)
+**Estagio**: 0.5.5 | **Arquivo**: `0.5.5-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html`
+
+Diferentemente dos outros templates desta biblioteca, este artefato e um **arquivo HTML single-file** (nao markdown). A especificacao completa de stack, design tokens, estrutura obrigatoria, checklist e what-not-to-do vive em:
+
+> **`docs-workflow/contexts/prototype-visual-guidelines.md`** — spec tecnica carregada pelo agente 0.5.5
+
+Resumo das regras inegociaveis:
+- **Stack**: Tailwind Play CDN + Alpine.js 3.x — nada mais
+- **Tokens**: CSS variables em `:root` para cores, tipografia, espacamento, raio, sombra
+- **Estrutura**: meta tags de artefato no `<head>`, banner fixo "prototype-only" no topo, device frame (mobile 375x812 para end-users, `max-w-6xl` desktop para operadores), navegacao Alpine entre telas, ajustes *must* do relatorio 0.5 implementados como interacao real
+- **Quantidade de arquivos**: um HTML por tipo de usuario com fluxo descrito tela-a-tela no 0.5-prototipo (detectado dinamicamente pelo agente)
+
+**Meta tags obrigatorias no `<head>`** (substituem o frontmatter YAML):
+```html
+<meta name="artefato" content="0.5.5-prototipo-visual">
+<meta name="estagio" content="0.5.5">
+<meta name="tipo-usuario" content="{tipo}">
+<meta name="slug" content="{slug}">
+<meta name="data" content="{YYYY-MM-DD}">
+<meta name="fonte" content="0.5-prototipo--{YYYYMMDD}--{slug}.md">
+```
+
+**Esqueleto minimo do HTML**:
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta tags de artefato -->
+  <title>Protótipo Visual — {tipo} — {produto}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    :root { /* design tokens */ }
+    .device-frame { /* mobile 375x812 ou desktop max-w-6xl */ }
+    .proto-banner { position: fixed; top: 0; ... }
+  </style>
+</head>
+<body class="bg-[var(--color-neutral-100)]">
+  <div class="proto-banner">Protótipo de apresentacao — nao e codigo de producao</div>
+  <main class="device-frame" x-data="{ screen: 0, screens: [...] }">
+    <!-- telas em <template x-if="screen === N"> -->
+    <!-- navegacao proxima/anterior + pager dots -->
+  </main>
+  <footer>Slug: {slug} · Data: {YYYY-MM-DD} · Fonte: 0.5-prototipo--...md</footer>
+</body>
+</html>
+```
+
+**Este artefato NAO gera resumo compacto que alimenta o 0.6.** Gera apenas um side-note em `outputs/workflow/0.5.5-prototype-visual/compact/resumo-0.5.5--{YYYYMMDD}--{slug}.md` para trackeabilidade. O 0.6 continua consumindo o Resumo 0.5 intacto. Ver `artifact-summary-format.md` secao "Resumo 0.5.5".
 
 ---
 

@@ -25,9 +25,15 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
   │  DIVERGE: 3-5          CONVERGE:         │
   │  alternativas          Go / No-Go /      │
   │  genuinamente          Pivotar            │
-  │  distintas                                │
-  └──────────────────────┬──────────────────┘
-                         ▼ [somente se Go]
+  │  distintas               │                │
+  │                          ├─→ [0.5.5]     │
+  │                          │   Prototipo   │
+  │                          │   Visual HTML │
+  │                          │   (stakeholder│
+  │                          │    preview,   │
+  │                          │    opcional)  │
+  └──────────────────────────┬──────────────┘
+                             ▼ [somente se Go]
   BUILD (divergir em artefatos paralelos, convergir em specs)
   ┌─────────────────────────────────────────┐
   │ 0.6 Definicao ──────→ 0.7 Construcao   │
@@ -64,6 +70,7 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
 | 0.3 | Framing | **sonnet** | Convergir | Resumo 0.2 | Problem statement + Metricas |
 | 0.4 | Ideacao | **sonnet** | **Divergir** | Resumo 0.3 | 3-5 alternativas + Conceito |
 | 0.5 | Validacao | **sonnet** | **Convergir** | Resumo 0.4 | Prototipo + Go/No-Go |
+| 0.5.5 | Prototype Visual | **sonnet** | Lateral (opcional) | 0.5-prototipo + 0.5-relatorio + Resumo 0.5 | HTMLs clicaveis por tipo de usuario |
 | 0.6 | Definicao | **sonnet** | **Divergir** | Resumo 0.5 | PRD + Backlog + Arq + Release |
 | 0.7 | Construcao | **sonnet** | **Convergir** | Resumo 0.6 | Specs + Testes + Doc |
 | 0.8 | Homologacao | **haiku** | Convergir | Resumo 0.7 | Release notes + Rollout + UAT |
@@ -111,6 +118,16 @@ outputs/workflow/[estagio-anterior]/compact/
 
 Contexto adicional: [informacoes novas]
 ```
+
+### Passo 2.5 — Prototipo visual para stakeholders (0.5.5, opcional)
+Rode apenas quando a decisao no Resumo 0.5 for Go (ou Go condicional) e houver audiencia de stakeholders que precise de uma previa visual do produto antes do PRD.
+```
+Atue conforme o agente definido em agents/0.5.5-prototype-visual/agent.md
+
+Leia os artefatos completos em outputs/workflow/0.5-validacao/full/
+Leia o resumo em outputs/workflow/0.5-validacao/compact/
+```
+O agente detecta dinamicamente os tipos de usuario com fluxo proprio no protótipo e gera um HTML single-file clicavel (Tailwind Play CDN + Alpine.js) por tipo. Os HTMLs vao para `outputs/workflow/0.5.5-prototype-visual/full/`. **Este estagio nao altera o input do 0.6** — o 0.6 continua consumindo o Resumo 0.5 intacto.
 
 ### Passo 3 — Consultar exemplo (opcional)
 ```
