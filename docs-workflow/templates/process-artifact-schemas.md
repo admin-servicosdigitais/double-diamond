@@ -22,17 +22,17 @@ Todo artefato salvo em `outputs/workflow/{agent-id}/full/` e `/compact/` **deve*
 - Lowercase, ASCII puro (sem acentos), espacos e pontuacao substituidos por `-`
 - Maximo de 40 caracteres — truncar preservando palavras inteiras
 - **Origem**:
-  - Em `0.0`: derivado dos temas recebidos do usuario (ex: `futebol-corrida`)
-  - Em `0.1` em diante: derivado do **titulo da oportunidade escolhida** no 0.0 (ou do nome do produto quando ja definido). O slug **permanece estavel** do 0.1 ate o 0.6 — **nao recriar a cada estagio**
-- **Herança**: cada estagio le o slug do resumo compacto do estagio anterior (campo `slug:` no frontmatter do resumo) e reutiliza. Se o slug mudar (ex: pivot no 0.5), registrar explicitamente no resumo e usar o novo a partir dali
+  - Em `1`: derivado dos temas recebidos do usuario (ex: `futebol-corrida`)
+  - Em `2` em diante: derivado do **titulo da oportunidade escolhida** no 1 (ou do nome do produto quando ja definido). O slug **permanece estavel** do processo 2 ate o processo 9 — **nao recriar a cada estagio**
+- **Herança**: cada estagio le o slug do resumo compacto do estagio anterior (campo `slug:` no frontmatter do resumo) e reutiliza. Se o slug mudar (ex: pivot no 7), registrar explicitamente no resumo e usar o novo a partir dali
 
 **Colisao**: se ja existir arquivo com mesmo nome no mesmo dia, adicionar sufixo `-HHMM` apos a data (ex: `saude-hematologia-sangue--20260409-1430--explorer--radar-oportunidades.md`).
 
-**Excecao — estagio 0.5.5 (prototipo visual HTML)**: o `{artifact-name}` e substituido pelo `{tipo}` de usuario:
+**Excecao — processo 8 (prototipo visual HTML)**: o `{artifact-name}` e substituido pelo `{tipo}` de usuario:
 ```
 {slug}--{YYYYMMDD}--prototype-visual--{tipo}.html
 ```
-O `{tipo}` e detectado dinamicamente pelo agente 0.5.5 a partir dos fluxos descritos no protótipo 0.5 (ex: `doador`, `coordenador`, `professor`). Ver TMPL-011.5.
+O `{tipo}` e detectado dinamicamente pelo agente 8 a partir dos fluxos descritos no protótipo 7 (ex: `doador`, `coordenador`, `professor`). Ver TMPL-011.5.
 
 **Resumos compactos** em `/compact/` seguem o mesmo padrao com `{artifact-name}` fixo como `resumo`:
 ```
@@ -51,7 +51,7 @@ Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e
 ---
 
 ## TMPL-000: Radar de Oportunidades
-**Estagio**: 0.0 | **Arquivo**: `{slug}--{YYYYMMDD}--explorer--radar-oportunidades.md`
+**Estagio**: 1 | **Arquivo**: `{slug}--{YYYYMMDD}--explorer--radar-oportunidades.md`
 
 ```markdown
 # Radar de Oportunidades — [Temas]
@@ -114,7 +114,7 @@ Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e
 ---
 
 ## TMPL-001: Ficha da Oportunidade
-**Estagio**: 0.1 | **Arquivo**: `{slug}--{YYYYMMDD}--intake--ficha-oportunidade.md`
+**Estagio**: 2 | **Arquivo**: `{slug}--{YYYYMMDD}--intake--ficha-oportunidade.md`
 
 ```markdown
 # Ficha da Oportunidade — [Titulo]
@@ -148,7 +148,7 @@ Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e
 ---
 
 ## TMPL-002: Hipotese Inicial
-**Estagio**: 0.1 | **Arquivo**: `{slug}--{YYYYMMDD}--intake--hipotese-inicial.md`
+**Estagio**: 2 | **Arquivo**: `{slug}--{YYYYMMDD}--intake--hipotese-inicial.md`
 
 ```markdown
 # Hipotese Inicial — [Titulo da Oportunidade]
@@ -176,7 +176,7 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 ---
 
 ## TMPL-002A: Matriz de Fontes Quantitativas
-**Estagio**: 0.1.5 | **Arquivo**: `{slug}--{YYYYMMDD}--sourcing--fontes-quantitativas.md`
+**Estagio**: 3 | **Arquivo**: `{slug}--{YYYYMMDD}--sourcing--fontes-quantitativas.md`
 
 ```markdown
 # Matriz de Fontes Quantitativas — [Titulo da Oportunidade]
@@ -215,7 +215,7 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 ---
 
 ## TMPL-002B: Mapa de Acesso a Usuarios
-**Estagio**: 0.1.5 | **Arquivo**: `{slug}--{YYYYMMDD}--sourcing--acesso-usuarios.md`
+**Estagio**: 3 | **Arquivo**: `{slug}--{YYYYMMDD}--sourcing--acesso-usuarios.md`
 
 ```markdown
 # Mapa de Acesso a Usuarios — [Titulo da Oportunidade]
@@ -245,7 +245,7 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 ---
 
 ## TMPL-003: Plano de Pesquisa
-**Estagio**: 0.2 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--plano-pesquisa.md`
+**Estagio**: 4 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--plano-pesquisa.md`
 
 ```markdown
 # Plano de Pesquisa — [Titulo]
@@ -270,7 +270,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-004: Evidencias Consolidadas
-**Estagio**: 0.2 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--evidencias.md`
+**Estagio**: 4 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--evidencias.md`
 
 ```markdown
 # Evidencias — [Titulo]
@@ -296,7 +296,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-005: Mapa de Dores
-**Estagio**: 0.2 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--mapa-dores.md`
+**Estagio**: 4 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--mapa-dores.md`
 
 ```markdown
 # Mapa de Dores — [Titulo]
@@ -319,7 +319,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-006: Problem Statement
-**Estagio**: 0.3 | **Arquivo**: `{slug}--{YYYYMMDD}--framing--problem-statement.md`
+**Estagio**: 5 | **Arquivo**: `{slug}--{YYYYMMDD}--framing--problem-statement.md`
 
 ```markdown
 # Problem Statement — [Titulo]
@@ -350,7 +350,7 @@ Se resolvermos [X], esperamos que [Y] mude em [Z] porque [evidencia].
 ---
 
 ## TMPL-007: Metricas de Sucesso
-**Estagio**: 0.3 | **Arquivo**: `{slug}--{YYYYMMDD}--framing--metricas-sucesso.md`
+**Estagio**: 5 | **Arquivo**: `{slug}--{YYYYMMDD}--framing--metricas-sucesso.md`
 
 ```markdown
 # Metricas de Sucesso — [Titulo]
@@ -387,7 +387,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-008: Alternativas de Solucao
-**Estagio**: 0.4 | **Arquivo**: `{slug}--{YYYYMMDD}--ideacao--alternativas.md`
+**Estagio**: 6 | **Arquivo**: `{slug}--{YYYYMMDD}--ideacao--alternativas.md`
 
 ```markdown
 # Alternativas de Solucao — [Titulo]
@@ -421,7 +421,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-009: Conceito Escolhido
-**Estagio**: 0.4 | **Arquivo**: `{slug}--{YYYYMMDD}--ideacao--conceito-escolhido.md`
+**Estagio**: 6 | **Arquivo**: `{slug}--{YYYYMMDD}--ideacao--conceito-escolhido.md`
 
 ```markdown
 # Conceito Escolhido — [Titulo]
@@ -442,7 +442,7 @@ A solucao sera considerada bem-sucedida se:
 - **Backend**: [abordagem]
 - **Dados**: [abordagem]
 - **Integracoes**: [quais]
-- **Multi-tenancy**: [abordagem — ver contexts/saas-concerns-checklist.md]
+- **Multi-tenancy**: [abordagem — ver contexts/process-saas-concerns-checklist.md]
 
 ## Trade-offs aceitos
 | O que ganhamos | O que abrimos mao | Por que e aceitavel |
@@ -458,7 +458,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-010: Prototipo Descritivo
-**Estagio**: 0.5 | **Arquivo**: `{slug}--{YYYYMMDD}--validacao--prototipo.md`
+**Estagio**: 7 | **Arquivo**: `{slug}--{YYYYMMDD}--validacao--prototipo.md`
 
 ```markdown
 # Prototipo — [Titulo]
@@ -490,7 +490,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-011: Relatorio de Validacao
-**Estagio**: 0.5 | **Arquivo**: `{slug}--{YYYYMMDD}--validacao--relatorio-teste.md`
+**Estagio**: 7 | **Arquivo**: `{slug}--{YYYYMMDD}--validacao--relatorio-teste.md`
 
 ```markdown
 # Relatorio de Validacao — [Titulo]
@@ -524,22 +524,22 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-011.5: Prototipo Visual Clicavel (HTML)
-**Estagio**: 0.5.5 | **Arquivo**: `{slug}--{YYYYMMDD}--prototype-visual--{tipo}.html`
+**Estagio**: 8 | **Arquivo**: `{slug}--{YYYYMMDD}--prototype-visual--{tipo}.html`
 
 Diferentemente dos outros templates desta biblioteca, este artefato e um **arquivo HTML single-file** (nao markdown). A especificacao completa de stack, design tokens, estrutura obrigatoria, checklist e what-not-to-do vive em:
 
-> **`docs-workflow/contexts/prototype-visual-guidelines.md`** — spec tecnica carregada pelo agente 0.5.5
+> **`docs-workflow/contexts/process-8-prototype-visual-guidelines.md`** — spec tecnica carregada pelo agente 8
 
 Resumo das regras inegociaveis:
 - **Stack**: Tailwind Play CDN + Alpine.js 3.x — nada mais
 - **Tokens**: CSS variables em `:root` para cores, tipografia, espacamento, raio, sombra
-- **Estrutura**: meta tags de artefato no `<head>`, banner fixo "prototype-only" no topo, device frame (mobile 375x812 para end-users, `max-w-6xl` desktop para operadores), navegacao Alpine entre telas, ajustes *must* do relatorio 0.5 implementados como interacao real
-- **Quantidade de arquivos**: um HTML por tipo de usuario com fluxo descrito tela-a-tela no 0.5-prototipo (detectado dinamicamente pelo agente)
+- **Estrutura**: meta tags de artefato no `<head>`, banner fixo "prototype-only" no topo, device frame (mobile 375x812 para end-users, `max-w-6xl` desktop para operadores), navegacao Alpine entre telas, ajustes *must* do relatorio 7 implementados como interacao real
+- **Quantidade de arquivos**: um HTML por tipo de usuario com fluxo descrito tela-a-tela no 7-prototipo (detectado dinamicamente pelo agente)
 
 **Meta tags obrigatorias no `<head>`** (substituem o frontmatter YAML):
 ```html
-<meta name="artefato" content="0.5.5-prototipo-visual">
-<meta name="estagio" content="0.5.5">
+<meta name="artefato" content="8-prototipo-visual">
+<meta name="estagio" content="8">
 <meta name="tipo-usuario" content="{tipo}">
 <meta name="slug" content="{slug}">
 <meta name="data" content="{YYYY-MM-DD}">
@@ -574,12 +574,12 @@ Resumo das regras inegociaveis:
 </html>
 ```
 
-**Este artefato NAO gera resumo compacto que alimenta o 0.6.** Gera apenas um side-note em `outputs/workflow/0.5.5-prototype-visual/compact/{slug}--{YYYYMMDD}--prototype-visual--resumo.md` para trackeabilidade. O 0.6 continua consumindo o Resumo 0.5 intacto. Ver `artifact-summary-format.md` secao "Resumo 0.5.5".
+**Este artefato NAO gera resumo compacto que alimenta o 9.** Gera apenas um side-note em `outputs/workflow/8-prototype-visual/compact/{slug}--{YYYYMMDD}--prototype-visual--resumo.md` para trackeabilidade. O processo 9 continua consumindo o Resumo 7 intacto. Ver `process-summary-format.md` secao "Resumo 8".
 
 ---
 
 ## TMPL-012: PRD
-**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--prd.md`
+**Estagio**: 9 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--prd.md`
 
 ```markdown
 # PRD — [Nome da Feature]
@@ -610,8 +610,8 @@ Resumo das regras inegociaveis:
 |----|-----------|--------------|
 | RNF-01 | Performance | [p95 < Xms] |
 | RNF-02 | Disponibilidade | [99.X%] |
-| RNF-03 | Multi-tenancy | [ver contexts/saas-concerns-checklist.md] |
-| RNF-04 | Seguranca | [ver contexts/saas-concerns-checklist.md] |
+| RNF-03 | Multi-tenancy | [ver contexts/process-saas-concerns-checklist.md] |
+| RNF-04 | Seguranca | [ver contexts/process-saas-concerns-checklist.md] |
 
 ## Fora de escopo
 - [item 1]
@@ -630,7 +630,7 @@ Resumo das regras inegociaveis:
 ---
 
 ## TMPL-013: Backlog Priorizado
-**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--backlog.md`
+**Estagio**: 9 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--backlog.md`
 
 ```markdown
 # Backlog — [Nome da Feature]
@@ -655,7 +655,7 @@ Resumo das regras inegociaveis:
 ---
 
 ## TMPL-014: Arquitetura-alvo
-**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--arquitetura.md`
+**Estagio**: 9 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--arquitetura.md`
 
 ```markdown
 # Arquitetura — [Nome da Feature]
@@ -674,7 +674,7 @@ Resumo das regras inegociaveis:
 | [entidade] | [campos] | [FK para] |
 
 ## SaaS Concerns
-Aplique as diretrizes de `contexts/saas-concerns-checklist.md`:
+Aplique as diretrizes de `contexts/process-saas-concerns-checklist.md`:
 - Multi-tenancy: [estrategia escolhida e justificativa]
 - Observabilidade: [stack escolhida]
 - Seguranca: [abordagem]
@@ -683,7 +683,7 @@ Aplique as diretrizes de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-015: Release Plan
-**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--release-plan.md`
+**Estagio**: 9 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--release-plan.md`
 
 ```markdown
 # Release Plan — [Nome da Feature]
