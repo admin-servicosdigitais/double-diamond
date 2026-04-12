@@ -8,6 +8,7 @@ role: Trend Scout & Innovation Researcher
 input_from: usuario (temas e interesses abstratos)
 output_templates: [TMPL-000]
 summary_format: "Resumo 1"
+tools: [websearch, subagent]
 ---
 
 # Agente 1 — Explorer Criativo

@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from typing import Any
-from uuid import uuid4
 
+from src.application.services.agent_execution_service import AgentExecutionService
 from src.application.services.prompt_assembler import PromptAssembler
 from src.domain.models.execution import StageExecutionResult
 from src.domain.models.workflow import StageState, WorkflowState
@@ -25,6 +25,11 @@ class WorkflowService:
         self.agent_loader = agent_loader or AgentMarkdownLoader()
         self.prompt_assembler = prompt_assembler or PromptAssembler()
         self.agent_runner = agent_runner or AgnoAgentRunner()
+        self.agent_execution_service = AgentExecutionService(
+            repository=self.repository,
+            prompt_assembler=self.prompt_assembler,
+            agent_runner=self.agent_runner,
+        )
 
     def create_workflow(self, workflow_id: str, name: str | None = None) -> WorkflowState:
         workflow = WorkflowState(id=workflow_id, name=name or workflow_id)
@@ -34,16 +39,17 @@ class WorkflowService:
         return self.repository.get_workflow(workflow_id)
 
     def run_stage(self, workflow_id: str, stage: str, user_input: str | dict[str, Any] | None) -> StageExecutionResult:
-        if stage != "2-intake":
-            raise ValueError("No fluxo atual, apenas o agente 2-intake está habilitado.")
-
         workflow = self.repository.get_workflow(workflow_id)
         previous_stage = self._get_previous_stage(stage)
 
         if previous_stage:
             previous_state = self._find_stage_state(workflow, previous_stage)
-            if previous_state and previous_state.status == "approved":
-                self.repository.update_stage_status(workflow_id, previous_stage, "completed")
+            if previous_state is None or previous_state.status != "approved":
+                raise ValueError(
+                    f"Stage '{stage}' só pode executar quando o estágio anterior '{previous_stage}' estiver approved."
+                )
+
+            self.repository.update_stage_status(workflow_id, previous_stage, "completed")
 
         self.repository.update_stage_status(workflow_id, stage, "running")
         self.repository.save_stage_input(workflow_id, stage, {"input": user_input})
@@ -52,39 +58,29 @@ class WorkflowService:
         if agent_definition is None:
             raise FileNotFoundError(f"Agent '{stage}' not found")
 
-        previous_compact = self._read_previous_compact(workflow_id, previous_stage)
-        prompt = self.prompt_assembler.build(
-            agent=agent_definition,
+        input_source_stage = self.get_input_for_stage(stage)
+        previous_compact = self._read_previous_compact(workflow_id, input_source_stage)
+        include_full_previous_stage = stage == "8-prototype-visual" and input_source_stage == "7-validacao"
+        previous_full_outputs = self._read_previous_full_outputs(workflow_id, input_source_stage) if include_full_previous_stage else None
+
+        execution_result = self.agent_execution_service.execute(
+            workflow_id=workflow_id,
+            agent_definition=agent_definition,
+            user_input=user_input,
             previous_compact=previous_compact,
-            context=user_input,
+            previous_full_outputs=previous_full_outputs,
+            include_full_previous_stage=include_full_previous_stage,
         )
 
-        run_id = str(uuid4())
-        output_text = self.agent_runner.run(agent_definition, prompt)
-        saved_output = self.repository.save_stage_output(
-            workflow_id=workflow_id,
-            stage=stage,
-            compact_output_text=output_text,
-            full_outputs={"prompt.md": prompt, "response_full.md": output_text},
-            metadata={"run_id": run_id},
-        )
         self.repository.update_stage_status(
             workflow_id,
             stage,
             "awaiting_human_approval",
-            metadata={"run_id": run_id, "updated_at": datetime.utcnow().isoformat()},
+            metadata={"run_id": execution_result.run_id, "updated_at": datetime.utcnow().isoformat()},
         )
 
-        return StageExecutionResult(
-            workflow_id=workflow_id,
-            run_id=run_id,
-            stage=stage,
-            agent_id=stage,
-            status="awaiting_human_approval",
-            compact_output_text=output_text,
-            full_output_paths=saved_output.get("full_output_paths", []),
-            next_stage_available=self.get_next_stage(stage) is not None,
-        )
+        execution_result.next_stage_available = self.get_next_stage(stage) is not None
+        return execution_result
 
     def approve_stage(self, workflow_id: str, stage: str) -> WorkflowState:
         workflow = self.repository.get_workflow(workflow_id)
@@ -116,7 +112,7 @@ class WorkflowService:
     ) -> StageExecutionResult:
         workflow = self.repository.get_workflow(workflow_id)
         current = self._find_stage_state(workflow, stage)
-        if current is None or current.status not in {"approved", "completed"}:
+        if current is None or current.status != "approved":
             raise ValueError("next só funciona se o estágio atual estiver aprovado.")
 
         next_stage = self.get_next_stage(stage)
@@ -140,6 +136,13 @@ class WorkflowService:
             return None
 
         return ordered_ids[index + 1]
+
+
+    def get_input_for_stage(self, stage: str) -> str | None:
+        if stage == "9-definicao":
+            return "7-validacao"
+
+        return self._get_previous_stage(stage)
 
     def get_stage_state(self, workflow_id: str, stage: str) -> StageState:
         workflow = self.repository.get_workflow(workflow_id)
@@ -211,6 +214,22 @@ class WorkflowService:
 
         return ordered_ids[index - 1]
 
+
+
+    def _read_previous_full_outputs(self, workflow_id: str, previous_stage: str | None) -> dict[str, str] | None:
+        if previous_stage is None:
+            return None
+
+        full_dir = self.repository.base_path / workflow_id / "stages" / previous_stage / "output_full"
+        if not full_dir.exists():
+            return None
+
+        outputs: dict[str, str] = {}
+        for file_path in sorted(full_dir.iterdir()):
+            if file_path.is_file():
+                outputs[file_path.name] = file_path.read_text(encoding="utf-8")
+
+        return outputs or None
 
     def _resolve_stage_from_agent_code(self, agent_code: str) -> str | None:
         normalized = agent_code.strip().lower()
