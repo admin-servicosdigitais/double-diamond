@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from datetime import datetime
 from typing import Any
 
@@ -9,14 +8,14 @@ from src.application.services.prompt_assembler import PromptAssembler
 from src.domain.models.execution import StageExecutionResult
 from src.domain.models.workflow import StageState, WorkflowState
 from src.infrastructure.agents.agno_agent_runner import AgnoAgentRunner
-from src.infrastructure.persistence.workflow_repository import WorkflowRepository
+from src.infrastructure.persistence.repository_protocol import WorkflowRepositoryProtocol
 from src.loaders.agent_markdown_loader import AgentMarkdownLoader
 
 
 class WorkflowService:
     def __init__(
         self,
-        repository: WorkflowRepository,
+        repository: WorkflowRepositoryProtocol,
         agent_loader: AgentMarkdownLoader | None = None,
         prompt_assembler: PromptAssembler | None = None,
         agent_runner: AgnoAgentRunner | None = None,
@@ -49,28 +48,35 @@ class WorkflowService:
                     f"Stage '{stage}' só pode executar quando o estágio anterior '{previous_stage}' estiver approved."
                 )
 
-            self.repository.update_stage_status(workflow_id, previous_stage, "completed")
-
         self.repository.update_stage_status(workflow_id, stage, "running")
         self.repository.save_stage_input(workflow_id, stage, {"input": user_input})
 
-        agent_definition = self.agent_loader.load_by_id(stage)
-        if agent_definition is None:
-            raise FileNotFoundError(f"Agent '{stage}' not found")
+        try:
+            agent_definition = self.agent_loader.load_by_id(stage)
+            if agent_definition is None:
+                raise FileNotFoundError(f"Agent '{stage}' not found")
 
-        input_source_stage = self.get_input_for_stage(stage)
-        previous_compact = self._read_previous_compact(workflow_id, input_source_stage)
-        include_full_previous_stage = stage == "8-prototype-visual" and input_source_stage == "7-validacao"
-        previous_full_outputs = self._read_previous_full_outputs(workflow_id, input_source_stage) if include_full_previous_stage else None
+            input_source_stage = self.get_input_for_stage(stage)
+            previous_compact = self._read_previous_compact(workflow_id, input_source_stage)
+            include_full_previous_stage = stage == "8-prototype-visual" and input_source_stage == "7-validacao"
+            previous_full_outputs = self._read_previous_full_outputs(workflow_id, input_source_stage) if include_full_previous_stage else None
 
-        execution_result = self.agent_execution_service.execute(
-            workflow_id=workflow_id,
-            agent_definition=agent_definition,
-            user_input=user_input,
-            previous_compact=previous_compact,
-            previous_full_outputs=previous_full_outputs,
-            include_full_previous_stage=include_full_previous_stage,
-        )
+            execution_result = self.agent_execution_service.execute(
+                workflow_id=workflow_id,
+                agent_definition=agent_definition,
+                user_input=user_input,
+                previous_compact=previous_compact,
+                previous_full_outputs=previous_full_outputs,
+                include_full_previous_stage=include_full_previous_stage,
+            )
+        except Exception as exc:  # noqa: BLE001
+            self.repository.update_stage_status(
+                workflow_id,
+                stage,
+                "failed",
+                metadata={"error": str(exc), "updated_at": datetime.utcnow().isoformat()},
+            )
+            raise
 
         self.repository.update_stage_status(
             workflow_id,
@@ -78,6 +84,9 @@ class WorkflowService:
             "awaiting_human_approval",
             metadata={"run_id": execution_result.run_id, "updated_at": datetime.utcnow().isoformat()},
         )
+
+        if previous_stage:
+            self.repository.update_stage_status(workflow_id, previous_stage, "completed")
 
         execution_result.next_stage_available = self.get_next_stage(stage) is not None
         return execution_result
@@ -152,31 +161,7 @@ class WorkflowService:
         return stage_state
 
     def get_stage_outputs(self, workflow_id: str, stage: str) -> dict[str, Any]:
-        stage_dir = self.repository.base_path / workflow_id / "stages" / stage
-        if not stage_dir.exists():
-            raise FileNotFoundError(f"Stage '{stage}' not found in workflow '{workflow_id}'")
-
-        compact_path = stage_dir / "output_compact.md"
-        metadata_path = stage_dir / "metadata.json"
-        output_full_dir = stage_dir / "output_full"
-
-        metadata: dict[str, Any] = {}
-        if metadata_path.exists():
-            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-
-        full_outputs = []
-        if output_full_dir.exists():
-            full_outputs = [str(path) for path in sorted(output_full_dir.iterdir()) if path.is_file()]
-
-        compact_output_text = compact_path.read_text(encoding="utf-8") if compact_path.exists() else ""
-
-        return {
-            "workflow_id": workflow_id,
-            "stage": stage,
-            "compact_output_text": compact_output_text,
-            "full_output_paths": full_outputs,
-            "metadata": metadata,
-        }
+        return self.repository.get_stage_outputs(workflow_id, stage)
 
 
     def get_latest_output_by_agent_code(self, workflow_id: str, agent_code: str) -> dict[str, Any]:
@@ -220,16 +205,7 @@ class WorkflowService:
         if previous_stage is None:
             return None
 
-        full_dir = self.repository.base_path / workflow_id / "stages" / previous_stage / "output_full"
-        if not full_dir.exists():
-            return None
-
-        outputs: dict[str, str] = {}
-        for file_path in sorted(full_dir.iterdir()):
-            if file_path.is_file():
-                outputs[file_path.name] = file_path.read_text(encoding="utf-8")
-
-        return outputs or None
+        return self.repository.read_stage_full_outputs(workflow_id, previous_stage)
 
     def _resolve_stage_from_agent_code(self, agent_code: str) -> str | None:
         normalized = agent_code.strip().lower()
@@ -254,14 +230,4 @@ class WorkflowService:
         if previous_stage is None:
             return None
 
-        compact_path = (
-            self.repository.base_path
-            / workflow_id
-            / "stages"
-            / previous_stage
-            / "output_compact.md"
-        )
-        if not compact_path.exists():
-            return None
-
-        return compact_path.read_text(encoding="utf-8").strip()
+        return self.repository.read_stage_compact_output(workflow_id, previous_stage)

@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    env_file:
+      - .env
+    environment:
+      WORKFLOW_BACKEND: ${WORKFLOW_BACKEND:-sqlite}
+      WORKFLOW_SQLITE_PATH: ${WORKFLOW_SQLITE_PATH:-/app/data/workflows/workflows.db}
+      AGNO_MOCK: ${AGNO_MOCK:-1}
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+
+  test:
+    build: .
+    env_file:
+      - .env
+    environment:
+      WORKFLOW_BACKEND: ${WORKFLOW_BACKEND:-sqlite}
+      WORKFLOW_SQLITE_PATH: ${WORKFLOW_SQLITE_PATH:-/app/data/workflows/workflows.db}
+      AGNO_MOCK: ${AGNO_MOCK:-1}
+    volumes:
+      - ./data:/app/data
+    command: ["pytest", "-q"]

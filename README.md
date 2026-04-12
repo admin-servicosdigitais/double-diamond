@@ -14,6 +14,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### Variáveis de ambiente
+
+Copie `.env-example` para `.env` e ajuste conforme o backend escolhido:
+
+```bash
+cp .env-example .env
+```
+
+
 ### 3) Subir a API
 ```bash
 uvicorn src.main:app --reload
@@ -60,6 +69,43 @@ data/workflows/
       output_full/
       metadata.json
 ```
+
+
+## Backend SQLite (opcional)
+
+### Rodando com Docker Compose
+
+```bash
+cp .env-example .env
+docker compose up --build api
+```
+
+Para executar testes dentro do container (sem depender do ambiente local):
+
+```bash
+docker compose run --rm test
+```
+
+
+Para reduzir problemas de concorrência e facilitar evolução para banco, o serviço agora suporta backend SQLite via variável de ambiente.
+
+```bash
+WORKFLOW_BACKEND=sqlite \
+WORKFLOW_SQLITE_PATH=data/workflows/workflows.db \
+uvicorn src.main:app --reload
+```
+
+### Rodando em Docker (SQLite com volume)
+
+```bash
+docker run --rm -p 8000:8000 \
+  -e WORKFLOW_BACKEND=sqlite \
+  -e WORKFLOW_SQLITE_PATH=/app/data/workflows/workflows.db \
+  -v $(pwd)/data:/app/data \
+  -w /app python:3.12-slim bash -lc "pip install -r requirements.txt && uvicorn src.main:app --host 0.0.0.0 --port 8000"
+```
+
+> Observação: SQLite melhora controle transacional para um deployment single-instance. Para escala horizontal, prefira Postgres.
 
 ## Exemplos de curl
 
