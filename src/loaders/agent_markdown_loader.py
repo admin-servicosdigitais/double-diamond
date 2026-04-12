@@ -39,7 +39,39 @@ class AgentMarkdownLoader:
             model=str(metadata.get("model", "")),
             summary_format=str(metadata.get("summary_format", "")),
             instructions_md=instructions_md,
+            tools=self._parse_tools(metadata.get("tools")),
+            execution_mode=str(metadata.get("execution_mode", "single_pass")),
+            max_steps=self._parse_max_steps(metadata.get("max_steps")),
         )
+
+    @staticmethod
+    def _parse_tools(raw_tools: object) -> list[str]:
+        if raw_tools is None:
+            return []
+
+        if isinstance(raw_tools, str):
+            return [tool.strip() for tool in raw_tools.split(",") if tool.strip()]
+
+        if isinstance(raw_tools, list):
+            parsed: list[str] = []
+            for tool in raw_tools:
+                if isinstance(tool, str) and tool.strip():
+                    parsed.append(tool.strip())
+            return parsed
+
+        return []
+
+    @staticmethod
+    def _parse_max_steps(raw_steps: object) -> int:
+        if raw_steps is None:
+            return 1
+
+        try:
+            parsed = int(raw_steps)
+        except (TypeError, ValueError):
+            return 1
+
+        return max(parsed, 1)
 
     @staticmethod
     def _split_frontmatter(content: str) -> tuple[dict, str]:
