@@ -1,7 +1,7 @@
 # SaaS Concerns Checklist
 
 Referencia compartilhada para multi-tenancy, seguranca e observabilidade.
-Carregue este arquivo nos estagios 0.4+ quando o agente solicitar.
+Carregue este arquivo nos estagios 6+ quando o agente solicitar.
 
 ---
 

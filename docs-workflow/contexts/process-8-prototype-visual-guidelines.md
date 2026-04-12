@@ -1,6 +1,6 @@
-# Guidelines para Geracao de Prototipo Visual (estagio 0.5.5)
+# Guidelines para Geracao de Prototipo Visual (estagio 8)
 
-Este documento e a especificacao tecnica que o agente 0.5.5 carrega ao gerar HTMLs single-file clicaveis. Define stack, design tokens obrigatorios, estrutura minima, o que fazer e o que nao fazer, e o checklist pre-save.
+Este documento e a especificacao tecnica que o agente 8 carrega ao gerar HTMLs single-file clicaveis. Define stack, design tokens obrigatorios, estrutura minima, o que fazer e o que nao fazer, e o checklist pre-save.
 
 ## Principio central
 
@@ -99,12 +99,12 @@ As meta tags substituem o frontmatter YAML (que nao existe em HTML). Exemplo:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="artefato" content="0.5.5-prototipo-visual">
-  <meta name="estagio" content="0.5.5">
+  <meta name="artefato" content="8-prototipo-visual">
+  <meta name="estagio" content="8">
   <meta name="tipo-usuario" content="doador">
   <meta name="slug" content="saude-hematologia-sangue">
   <meta name="data" content="2026-04-10">
-  <meta name="fonte" content="0.5-prototipo--20260410--saude-hematologia-sangue.md">
+  <meta name="fonte" content="7-prototipo--20260410--saude-hematologia-sangue.md">
   <title>Protótipo Visual — Doador — Vein CRM</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -188,7 +188,7 @@ Nao basta desenhar — o ajuste precisa ser **interativo** no HTML. Exemplos:
 Pequeno texto no bottom do arquivo indicando:
 - Slug do caso
 - Data de geracao
-- Estagio fonte (`0.5-prototipo--...md`)
+- Estagio fonte (`7-prototipo--...md`)
 
 Fica como "assinatura" do artefato, util quando stakeholders questionam de onde veio.
 
@@ -232,12 +232,12 @@ Para cada HTML gerado, passe por este checklist:
 - [ ] Sem dados sensiveis ou PII real
 - [ ] Arquivo abre sem erros de console quando carregado no browser
 - [ ] Rodape com slug, data e estagio fonte
-- [ ] Nome do arquivo segue padrao `0.5.5-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html`
+- [ ] Nome do arquivo segue padrao `8-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html`
 
 Se qualquer item falhar, **nao salve** — corrija antes.
 
 ## Referencias cruzadas
 
-- Template do artefato: `docs-workflow/templates/artifact-schemas.md` (secao TMPL-011.5)
-- Formato do resumo compacto: `docs-workflow/templates/artifact-summary-format.md` (secao Resumo 0.5.5)
-- Agente orquestrador: `agents/0.5.5-prototype-visual/agent.md`
+- Template do artefato: `docs-workflow/templates/process-artifact-schemas.md` (secao TMPL-011.5)
+- Formato do resumo compacto: `docs-workflow/templates/process-summary-format.md` (secao Resumo 8)
+- Agente orquestrador: `agents/8-prototype-visual/agent.md`
