@@ -6,10 +6,10 @@ from pydantic import BaseModel
 from src.application.services.workflow_service import WorkflowService
 from src.domain.models.execution import StageExecutionResult
 from src.domain.models.workflow import StageState, WorkflowState
-from src.infrastructure.persistence.workflow_repository import WorkflowRepository
+from src.infrastructure.persistence.repository_factory import build_workflow_repository
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
-workflow_service = WorkflowService(repository=WorkflowRepository())
+workflow_service = WorkflowService(repository=build_workflow_repository())
 
 
 class CreateWorkflowRequest(BaseModel):

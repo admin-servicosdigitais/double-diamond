@@ -10,13 +10,13 @@ from src.application.services.slug_service import SlugService
 from src.domain.models.agent_definition import AgentDefinition
 from src.domain.models.execution import StageExecutionResult
 from src.infrastructure.agents.agno_agent_runner import AgnoAgentRunner
-from src.infrastructure.persistence.workflow_repository import WorkflowRepository
+from src.infrastructure.persistence.repository_protocol import WorkflowRepositoryProtocol
 
 
 class AgentExecutionService:
     def __init__(
         self,
-        repository: WorkflowRepository,
+        repository: WorkflowRepositoryProtocol,
         prompt_assembler: PromptAssembler | None = None,
         agent_runner: AgnoAgentRunner | None = None,
         slug_service: SlugService | None = None,
