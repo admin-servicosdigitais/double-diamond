@@ -1,0 +1,4 @@
+$kind: collection
+name: Workflows
+description: 'Workflow creation, stage execution, and output retrieval endpoints.'
+order: 3000

@@ -1,0 +1,7 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/workflows/:workflow_id'
+order: 2000
+pathVariables:
+  - key: workflow_id
+    value: 'workflow-123'

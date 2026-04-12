@@ -1,0 +1,7 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/agents/:agent_id'
+order: 2000
+pathVariables:
+  - key: agent_id
+    value: 'example-agent'

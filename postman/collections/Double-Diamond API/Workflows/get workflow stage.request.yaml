@@ -1,0 +1,9 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/workflows/:workflow_id/stages/:stage'
+order: 6000
+pathVariables:
+  - key: workflow_id
+    value: 'workflow-123'
+  - key: stage
+    value: 'review'

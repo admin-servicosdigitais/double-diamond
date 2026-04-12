@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/workflows/:workflow_id/stages/:stage/next'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+pathVariables:
+  - key: workflow_id
+    value: 'workflow-123'
+  - key: stage
+    value: 'review'
+body:
+  type: json
+  content: |-
+    {
+      "input": "Approved input for the next stage"
+    }

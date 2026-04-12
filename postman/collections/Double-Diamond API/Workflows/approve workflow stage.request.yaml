@@ -1,0 +1,9 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/workflows/:workflow_id/stages/:stage/approve'
+order: 4000
+pathVariables:
+  - key: workflow_id
+    value: 'workflow-123'
+  - key: stage
+    value: 'review'
