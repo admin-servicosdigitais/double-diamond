@@ -1,7 +1,7 @@
 # SaaS Product Workflow — Orquestrador
 
 ## Visao geral
-Workflow de 12 estagios para construcao de produtos SaaS AI-First.
+Workflow de 9 estagios para construcao de produtos SaaS AI-First.
 Cada estagio e um agente independente. O humano executa cada passo e decide quando avancar.
 
 ## Fluxo: Divergir e Convergir
@@ -34,28 +34,11 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
   │                          │    opcional)  │
   └──────────────────────────┬──────────────┘
                              ▼ [somente se Go]
-  BUILD (divergir em artefatos paralelos, convergir em specs)
+  DEFINE (divergir em artefatos, convergir em specs)
   ┌─────────────────────────────────────────┐
-  │ 0.6 Definicao ──────→ 0.7 Construcao   │
-  │  DIVERGE: 4 artefatos   CONVERGE:       │
-  │  PRD | Backlog |         specs tecnicas  │
-  │  Arquitetura |           unificadas      │
-  │  Release plan                            │
-  └──────────────────────┬──────────────────┘
-                         ▼
-  SHIP (convergir no lancamento)
-  ┌─────────────────────────────────────────┐
-  │ 0.8 Homologacao ──→ 0.9 Go-live        │
-  │  (UAT + rollout)     (deploy + comms)   │
-  └──────────────────────┬──────────────────┘
-                         ▼
-  LEARN (decidir proximo ciclo)
-  ┌─────────────────────────────────────────┐
-  │ 0.10 Aprendizado                        │
-  │  Iterar → volta para 0.4               │
-  │  Pivotar → volta para 0.0 ou 0.1       │
-  │  Escalar → volta para 0.6 (fase 2)     │
-  │  Encerrar → fim                         │
+  │ 0.6 Definicao                           │
+  │  PRD | Backlog | Arquitetura |          │
+  │  Release plan                           │
   └─────────────────────────────────────────┘
 ```
 
@@ -72,10 +55,6 @@ Cada estagio e um agente independente. O humano executa cada passo e decide quan
 | 0.5 | Validacao | **sonnet** | **Convergir** | Resumo 0.4 | Prototipo + Go/No-Go |
 | 0.5.5 | Prototype Visual | **sonnet** | Lateral (opcional) | 0.5-prototipo + 0.5-relatorio + Resumo 0.5 | HTMLs clicaveis por tipo de usuario |
 | 0.6 | Definicao | **sonnet** | **Divergir** | Resumo 0.5 | PRD + Backlog + Arq + Release |
-| 0.7 | Construcao | **sonnet** | **Convergir** | Resumo 0.6 | Specs + Testes + Doc |
-| 0.8 | Homologacao | **haiku** | Convergir | Resumo 0.7 | Release notes + Rollout + UAT |
-| 0.9 | Go-live | **haiku** | Convergir | Resumo 0.8 | Checklist + Playbook + Comms |
-| 0.10 | Aprendizado | **sonnet** | Decidir | Resumo 0.9 + KPIs | Relatorio + Decisao + Backlog |
 
 ## Como executar um estagio
 
@@ -151,7 +130,7 @@ agents/                              — Agentes (so configs)
   0.X-nome/agent.md
 
 docs-workflow/                       — Material de apoio para os agentes
-  templates/artifact-schemas.md      — Templates de artefatos (TMPL-000 a 027)
+  templates/artifact-schemas.md      — Templates de artefatos (TMPL-000 a 015.5)
   templates/artifact-summary-format.md — Formato de resumo entre estagios
   contexts/saas-concerns-checklist.md  — Multi-tenancy, seguranca, observabilidade
   contexts/dod-framework.md          — Criterios de qualidade

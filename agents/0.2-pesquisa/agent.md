@@ -28,7 +28,7 @@ Entradas:
 6. Registre incertezas remanescentes
 
 ## Nomenclatura de arquivos
-**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.1.5-sourcing/compact/resumo-0.1.5--*.md`, que por sua vez herda de `outputs/workflow/0.1-intake/compact/resumo-0.1--*.md`) e reutilize em todos os artefatos deste estagio. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`. **O slug permanece estavel ate o 0.10** — nao recriar.
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.1.5-sourcing/compact/{slug}--*--sourcing--resumo.md`, que por sua vez herda de `outputs/workflow/0.1-intake/compact/{slug}--*--intake--resumo.md`) e reutilize em todos os artefatos deste estagio. Padrao: `{slug}--{YYYYMMDD}--{agent-name}--{artifact-name}.ext` — ver `docs-workflow/templates/artifact-schemas.md`. **O slug permanece estavel ate o 0.6** — nao recriar.
 
 ## Artefatos de saida
 Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
@@ -46,4 +46,4 @@ Adicionais deste estagio:
 - Nenhuma conclusao sem evidencia correspondente
 
 ## Ao finalizar
-Gere o **Resumo 0.2** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.2-pesquisa/compact/` como `resumo-0.2--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter.
+Gere o **Resumo 0.2** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.2-pesquisa/compact/` como `{slug}--{YYYYMMDD}--pesquisa--resumo.md`. Propague o `slug` no frontmatter.

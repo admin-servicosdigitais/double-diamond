@@ -9,43 +9,49 @@ Use o ID do template para referenciar a estrutura de output esperada em cada est
 Todo artefato salvo em `outputs/workflow/{agent-id}/full/` e `/compact/` **deve** seguir o padrao:
 
 ```
-{estagio}-{artefato}--{YYYYMMDD}--{slug}.md
+{slug}--{YYYYMMDD}--{agent-name}--{artifact-name}.ext
 ```
 
 **Componentes**:
-- `{estagio}` — identificador do estagio (`0.0`, `0.1`, ..., `0.10`)
-- `{artefato}` — nome canonico do artefato em kebab-case (ex: `radar-oportunidades`, `prd`, `arquitetura`)
-- `{YYYYMMDD}` — data de criacao do artefato (ex: `20260409`)
 - `{slug}` — identificador humano-legivel do contexto da execucao
+- `{YYYYMMDD}` — data de criacao do artefato (ex: `20260409`)
+- `{agent-name}` — nome do agente em kebab-case: `explorer`, `intake`, `sourcing`, `pesquisa`, `framing`, `ideacao`, `validacao`, `prototype-visual`, `definicao`
+- `{artifact-name}` — nome canonico do artefato em kebab-case (ex: `radar-oportunidades`, `prd`, `arquitetura`)
 
 **Regras do slug**:
 - Lowercase, ASCII puro (sem acentos), espacos e pontuacao substituidos por `-`
 - Maximo de 40 caracteres — truncar preservando palavras inteiras
 - **Origem**:
   - Em `0.0`: derivado dos temas recebidos do usuario (ex: `futebol-corrida`)
-  - Em `0.1` em diante: derivado do **titulo da oportunidade escolhida** no 0.0 (ou do nome do produto quando ja definido). O slug **permanece estavel** do 0.1 ate o 0.10 — **nao recriar a cada estagio**
+  - Em `0.1` em diante: derivado do **titulo da oportunidade escolhida** no 0.0 (ou do nome do produto quando ja definido). O slug **permanece estavel** do 0.1 ate o 0.6 — **nao recriar a cada estagio**
 - **Herança**: cada estagio le o slug do resumo compacto do estagio anterior (campo `slug:` no frontmatter do resumo) e reutiliza. Se o slug mudar (ex: pivot no 0.5), registrar explicitamente no resumo e usar o novo a partir dali
 
-**Colisao**: se ja existir arquivo com mesmo nome no mesmo dia, adicionar sufixo `-HHMM` apos a data (ex: `--20260409-1430--`).
+**Colisao**: se ja existir arquivo com mesmo nome no mesmo dia, adicionar sufixo `-HHMM` apos a data (ex: `saude-hematologia-sangue--20260409-1430--explorer--radar-oportunidades.md`).
 
-**Excecao — estagio 0.5.5 (prototipo visual HTML)**: o padrao ganha um segmento `{tipo}` para diferenciar os HTMLs por tipo de usuario:
+**Excecao — estagio 0.5.5 (prototipo visual HTML)**: o `{artifact-name}` e substituido pelo `{tipo}` de usuario:
 ```
-0.5.5-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html
+{slug}--{YYYYMMDD}--prototype-visual--{tipo}.html
 ```
 O `{tipo}` e detectado dinamicamente pelo agente 0.5.5 a partir dos fluxos descritos no protótipo 0.5 (ex: `doador`, `coordenador`, `professor`). Ver TMPL-011.5.
 
+**Resumos compactos** em `/compact/` seguem o mesmo padrao com `{artifact-name}` fixo como `resumo`:
+```
+{slug}--{YYYYMMDD}--{agent-name}--resumo.md
+```
+
 **Exemplos**:
-- `0.0-radar-oportunidades--20260409--futebol-corrida.md`
-- `0.1-ficha-oportunidade--20260410--plataforma-corredores-amadores.md`
-- `0.5.5-prototipo-visual--doador--20260410--saude-hematologia-sangue.html`
-- `0.6-prd--20260420--plataforma-corredores-amadores.md`
+- `futebol-corrida--20260409--explorer--radar-oportunidades.md`
+- `plataforma-corredores-amadores--20260410--intake--ficha-oportunidade.md`
+- `saude-hematologia-sangue--20260410--prototype-visual--doador.html`
+- `plataforma-corredores-amadores--20260420--definicao--prd.md`
+- `saude-hematologia-sangue--20260410--explorer--resumo.md`
 
 Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e `{slug}` — substitua ao gerar o artefato.
 
 ---
 
 ## TMPL-000: Radar de Oportunidades
-**Estagio**: 0.0 | **Arquivo**: `0.0-radar-oportunidades--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.0 | **Arquivo**: `{slug}--{YYYYMMDD}--explorer--radar-oportunidades.md`
 
 ```markdown
 # Radar de Oportunidades — [Temas]
@@ -108,7 +114,7 @@ Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e
 ---
 
 ## TMPL-001: Ficha da Oportunidade
-**Estagio**: 0.1 | **Arquivo**: `0.1-ficha-oportunidade--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.1 | **Arquivo**: `{slug}--{YYYYMMDD}--intake--ficha-oportunidade.md`
 
 ```markdown
 # Ficha da Oportunidade — [Titulo]
@@ -142,7 +148,7 @@ Os campos `**Arquivo**` nos templates abaixo usam os placeholders `{YYYYMMDD}` e
 ---
 
 ## TMPL-002: Hipotese Inicial
-**Estagio**: 0.1 | **Arquivo**: `0.1-hipotese-inicial--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.1 | **Arquivo**: `{slug}--{YYYYMMDD}--intake--hipotese-inicial.md`
 
 ```markdown
 # Hipotese Inicial — [Titulo da Oportunidade]
@@ -170,7 +176,7 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 ---
 
 ## TMPL-002A: Matriz de Fontes Quantitativas
-**Estagio**: 0.1.5 | **Arquivo**: `0.1.5-fontes-quantitativas--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.1.5 | **Arquivo**: `{slug}--{YYYYMMDD}--sourcing--fontes-quantitativas.md`
 
 ```markdown
 # Matriz de Fontes Quantitativas — [Titulo da Oportunidade]
@@ -209,7 +215,7 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 ---
 
 ## TMPL-002B: Mapa de Acesso a Usuarios
-**Estagio**: 0.1.5 | **Arquivo**: `0.1.5-acesso-usuarios--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.1.5 | **Arquivo**: `{slug}--{YYYYMMDD}--sourcing--acesso-usuarios.md`
 
 ```markdown
 # Mapa de Acesso a Usuarios — [Titulo da Oportunidade]
@@ -239,7 +245,7 @@ Acreditamos que [solucao proposta] para [persona] vai gerar [resultado esperado]
 ---
 
 ## TMPL-003: Plano de Pesquisa
-**Estagio**: 0.2 | **Arquivo**: `0.2-plano-pesquisa--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.2 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--plano-pesquisa.md`
 
 ```markdown
 # Plano de Pesquisa — [Titulo]
@@ -264,7 +270,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-004: Evidencias Consolidadas
-**Estagio**: 0.2 | **Arquivo**: `0.2-evidencias--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.2 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--evidencias.md`
 
 ```markdown
 # Evidencias — [Titulo]
@@ -290,7 +296,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-005: Mapa de Dores
-**Estagio**: 0.2 | **Arquivo**: `0.2-mapa-dores--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.2 | **Arquivo**: `{slug}--{YYYYMMDD}--pesquisa--mapa-dores.md`
 
 ```markdown
 # Mapa de Dores — [Titulo]
@@ -313,7 +319,7 @@ Consideraremos a pesquisa suficiente quando:
 ---
 
 ## TMPL-006: Problem Statement
-**Estagio**: 0.3 | **Arquivo**: `0.3-problem-statement--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.3 | **Arquivo**: `{slug}--{YYYYMMDD}--framing--problem-statement.md`
 
 ```markdown
 # Problem Statement — [Titulo]
@@ -344,7 +350,7 @@ Se resolvermos [X], esperamos que [Y] mude em [Z] porque [evidencia].
 ---
 
 ## TMPL-007: Metricas de Sucesso
-**Estagio**: 0.3 | **Arquivo**: `0.3-metricas-sucesso--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.3 | **Arquivo**: `{slug}--{YYYYMMDD}--framing--metricas-sucesso.md`
 
 ```markdown
 # Metricas de Sucesso — [Titulo]
@@ -381,7 +387,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-008: Alternativas de Solucao
-**Estagio**: 0.4 | **Arquivo**: `0.4-alternativas--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.4 | **Arquivo**: `{slug}--{YYYYMMDD}--ideacao--alternativas.md`
 
 ```markdown
 # Alternativas de Solucao — [Titulo]
@@ -415,7 +421,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-009: Conceito Escolhido
-**Estagio**: 0.4 | **Arquivo**: `0.4-conceito-escolhido--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.4 | **Arquivo**: `{slug}--{YYYYMMDD}--ideacao--conceito-escolhido.md`
 
 ```markdown
 # Conceito Escolhido — [Titulo]
@@ -452,7 +458,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-010: Prototipo Descritivo
-**Estagio**: 0.5 | **Arquivo**: `0.5-prototipo--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.5 | **Arquivo**: `{slug}--{YYYYMMDD}--validacao--prototipo.md`
 
 ```markdown
 # Prototipo — [Titulo]
@@ -484,7 +490,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-011: Relatorio de Validacao
-**Estagio**: 0.5 | **Arquivo**: `0.5-relatorio-teste--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.5 | **Arquivo**: `{slug}--{YYYYMMDD}--validacao--relatorio-teste.md`
 
 ```markdown
 # Relatorio de Validacao — [Titulo]
@@ -518,7 +524,7 @@ A solucao sera considerada bem-sucedida se:
 ---
 
 ## TMPL-011.5: Prototipo Visual Clicavel (HTML)
-**Estagio**: 0.5.5 | **Arquivo**: `0.5.5-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html`
+**Estagio**: 0.5.5 | **Arquivo**: `{slug}--{YYYYMMDD}--prototype-visual--{tipo}.html`
 
 Diferentemente dos outros templates desta biblioteca, este artefato e um **arquivo HTML single-file** (nao markdown). A especificacao completa de stack, design tokens, estrutura obrigatoria, checklist e what-not-to-do vive em:
 
@@ -537,7 +543,7 @@ Resumo das regras inegociaveis:
 <meta name="tipo-usuario" content="{tipo}">
 <meta name="slug" content="{slug}">
 <meta name="data" content="{YYYY-MM-DD}">
-<meta name="fonte" content="0.5-prototipo--{YYYYMMDD}--{slug}.md">
+<meta name="fonte" content="{slug}--{YYYYMMDD}--validacao--prototipo.md">
 ```
 
 **Esqueleto minimo do HTML**:
@@ -563,17 +569,17 @@ Resumo das regras inegociaveis:
     <!-- telas em <template x-if="screen === N"> -->
     <!-- navegacao proxima/anterior + pager dots -->
   </main>
-  <footer>Slug: {slug} · Data: {YYYY-MM-DD} · Fonte: 0.5-prototipo--...md</footer>
+  <footer>Slug: {slug} · Data: {YYYY-MM-DD} · Fonte: {slug}--...--validacao--prototipo.md</footer>
 </body>
 </html>
 ```
 
-**Este artefato NAO gera resumo compacto que alimenta o 0.6.** Gera apenas um side-note em `outputs/workflow/0.5.5-prototype-visual/compact/resumo-0.5.5--{YYYYMMDD}--{slug}.md` para trackeabilidade. O 0.6 continua consumindo o Resumo 0.5 intacto. Ver `artifact-summary-format.md` secao "Resumo 0.5.5".
+**Este artefato NAO gera resumo compacto que alimenta o 0.6.** Gera apenas um side-note em `outputs/workflow/0.5.5-prototype-visual/compact/{slug}--{YYYYMMDD}--prototype-visual--resumo.md` para trackeabilidade. O 0.6 continua consumindo o Resumo 0.5 intacto. Ver `artifact-summary-format.md` secao "Resumo 0.5.5".
 
 ---
 
 ## TMPL-012: PRD
-**Estagio**: 0.6 | **Arquivo**: `0.6-prd--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--prd.md`
 
 ```markdown
 # PRD — [Nome da Feature]
@@ -624,7 +630,7 @@ Resumo das regras inegociaveis:
 ---
 
 ## TMPL-013: Backlog Priorizado
-**Estagio**: 0.6 | **Arquivo**: `0.6-backlog--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--backlog.md`
 
 ```markdown
 # Backlog — [Nome da Feature]
@@ -649,7 +655,7 @@ Resumo das regras inegociaveis:
 ---
 
 ## TMPL-014: Arquitetura-alvo
-**Estagio**: 0.6 | **Arquivo**: `0.6-arquitetura--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--arquitetura.md`
 
 ```markdown
 # Arquitetura — [Nome da Feature]
@@ -677,7 +683,7 @@ Aplique as diretrizes de `contexts/saas-concerns-checklist.md`:
 ---
 
 ## TMPL-015: Release Plan
-**Estagio**: 0.6 | **Arquivo**: `0.6-release-plan--{YYYYMMDD}--{slug}.md`
+**Estagio**: 0.6 | **Arquivo**: `{slug}--{YYYYMMDD}--definicao--release-plan.md`
 
 ```markdown
 # Release Plan — [Nome da Feature]
@@ -700,370 +706,4 @@ Aplique as diretrizes de `contexts/saas-concerns-checklist.md`:
 | Dependencia | Responsavel | Status |
 |-------------|-------------|--------|
 | [o que precisa estar pronto] | [quem] | [status] |
-```
-
----
-
-## TMPL-016: Specs Tecnicas
-**Estagio**: 0.7 | **Arquivo**: `0.7-specs-tecnicas--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Specs Tecnicas — [Nome da Feature]
-
-## US-[ID]: [titulo]
-
-**Fluxo tecnico**:
-1. [passo com componente, endpoint, payload]
-
-**API Contract**:
-- `[METHOD] /api/v1/[resource]`
-- Request: `{ campo: tipo }`
-- Response: `{ campo: tipo }`
-- Erros: `400 [motivo], 404 [motivo], 403 [motivo]`
-
-**Modelo de dados (DDL resumido)**:
-- Tabela: [nome] — campos: [lista com tipos]
-- Indices: [quais]
-- Tenant isolation: [como tenant_id e aplicado]
-
-**Regras de negocio**:
-1. [regra com condicao e resultado]
-
-**Observabilidade**:
-- Logs: [eventos a logar]
-- Metricas: [contadores, histogramas]
-- Alertas: [condicoes]
-```
-
----
-
-## TMPL-017: Plano de Testes
-**Estagio**: 0.7 | **Arquivo**: `0.7-plano-testes--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Plano de Testes — [Nome da Feature]
-
-## Estrategia
-- **Unitarios**: cobertura minima [X%] em regras de negocio
-- **Integracao**: endpoints, filas, banco
-- **E2E**: happy path + edge cases criticos
-- **Performance**: carga esperada + 3x
-
-## Casos de teste prioritarios
-| ID | Tipo | Cenario | Input | Expected | Automacao |
-|----|------|---------|-------|----------|-----------|
-| TC-01 | Unit | [cenario] | [dado] | [esperado] | Sim |
-
-## Testes de seguranca e multi-tenancy
-Aplique os cenarios de `contexts/saas-concerns-checklist.md`:
-| Cenario | O que valida |
-|---------|-------------|
-| Tenant A acessa dado de B | Retorna 403 |
-| Token expirado | Retorna 401 |
-| SQL injection em campo X | Input sanitizado |
-| CRUD com tenant_id | Dados isolados |
-| Query sem tenant_id | Rejeitada ou filtrada |
-```
-
----
-
-## TMPL-018: Documentacao Tecnica
-**Estagio**: 0.7 | **Arquivo**: `0.7-doc-tecnica--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Doc Tecnica — [Nome da Feature]
-
-## Visao geral
-[O que o servico faz em 2-3 frases]
-
-## Arquitetura implementada
-[Componentes, fluxo, tecnologias usadas]
-
-## Como rodar localmente
-1. [passo a passo]
-
-## Variaveis de ambiente
-| Variavel | Descricao | Exemplo |
-|----------|-----------|---------|
-| [VAR] | [o que faz] | [valor exemplo] |
-
-## Endpoints
-| Metodo | Path | Descricao | Auth |
-|--------|------|-----------|------|
-| [POST] | [/api/v1/x] | [o que faz] | [Bearer token] |
-
-## Decisoes tecnicas (ADRs resumidos)
-| Decisao | Alternativas | Escolha | Motivo |
-|---------|-------------|---------|--------|
-| [o que] | [opcoes] | [escolhida] | [por que] |
-```
-
----
-
-## TMPL-019: Release Notes
-**Estagio**: 0.8 | **Arquivo**: `0.8-release-notes--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Release Notes — [Feature] v[X.Y.Z]
-
-**Data prevista**: [data] | **Tipo**: Feature | Bugfix | Melhoria
-
-## O que muda para o usuario
-- [mudanca visivel 1]
-
-## O que muda internamente
-- [mudanca tecnica 1]
-
-## Breaking changes
-- [nenhum | lista]
-
-## Feature flags
-| Flag | Estado no deploy | Rollout |
-|------|-----------------|---------|
-| [flag] | [off] | [ativacao manual apos validacao] |
-
-## Problemas conhecidos
-- [item ou "nenhum identificado"]
-```
-
----
-
-## TMPL-020: Plano de Rollout e Rollback
-**Estagio**: 0.8 | **Arquivo**: `0.8-rollout-rollback--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Plano de Rollout — [Feature]
-
-## Sequencia de deploy
-| Etapa | Ambiente | Acao | Criterio de avanco | Responsavel |
-|-------|---------|------|-------------------|-------------|
-| 1 | Staging | Deploy + smoke test | Testes passam | DevOps |
-| 2 | Producao (canary 5%) | Deploy + monitorar 30min | Error rate < 0.1% | SRE |
-| 3 | Producao (25%) | Expandir rollout | Sem degradacao | SRE |
-| 4 | Producao (100%) | Full rollout | Metricas estaveis 2h | PM + SRE |
-
-## Criterios de rollback
-Reverter imediatamente se:
-1. Error rate > [X%]
-2. Latencia p95 > [Xms]
-3. Incidente de seguranca ou vazamento de dados entre tenants
-
-## Procedimento de rollback
-1. [desligar feature flag / reverter deploy]
-2. [notificar stakeholders]
-3. [investigar causa raiz]
-```
-
----
-
-## TMPL-021: Checklist UAT
-**Estagio**: 0.8 | **Arquivo**: `0.8-checklist-uat--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Checklist de Homologacao — [Feature]
-
-## Funcional
-- [ ] Happy path completo validado
-- [ ] Edge cases criticos testados
-- [ ] Permissoes e roles verificados
-- [ ] Dados entre tenants isolados
-
-## Nao-funcional
-- [ ] Performance dentro do SLA
-- [ ] Teste de carga executado
-- [ ] Scan de seguranca sem criticals/highs
-- [ ] Logs e metricas fluindo
-
-## Release readiness
-- [ ] Release notes revisadas
-- [ ] Rollback plan documentado e testado
-- [ ] Monitoramento e alertas configurados
-- [ ] Stakeholders notificados
-- [ ] Aprovacao formal registrada
-
-**Aprovador**: [nome] | **Data**: [data] | **Status**: Aprovado | Reprovado
-```
-
----
-
-## TMPL-022: Checklist de Producao
-**Estagio**: 0.9 | **Arquivo**: `0.9-checklist-producao--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Checklist Go-Live — [Feature]
-
-**Data do deploy**: [data] | **Janela**: [horario]
-
-## Pre-deploy
-- [ ] Backup do banco executado
-- [ ] Feature flags configuradas (off)
-- [ ] Monitoramento e dashboards prontos
-- [ ] Equipe de plantao escalada
-- [ ] Canal de war room criado
-
-## Durante o deploy
-- [ ] Deploy executado no ambiente de producao
-- [ ] Smoke tests automatizados passaram
-- [ ] Health checks de todos os servicos OK
-- [ ] Feature flag ativada para grupo canary
-
-## Pos-deploy (primeiras 2h)
-- [ ] Error rate monitorado e dentro do esperado
-- [ ] Latencia dentro do SLA
-- [ ] Sem alertas de seguranca ou isolamento de tenant
-- [ ] Primeiros usuarios operando com sucesso
-
-## Pos-deploy (primeiras 24h)
-- [ ] Metricas de adocao acompanhadas
-- [ ] Tickets de suporte triados
-- [ ] Comunicacao de lancamento enviada
-```
-
----
-
-## TMPL-023: Playbook de Suporte
-**Estagio**: 0.9 | **Arquivo**: `0.9-playbook-suporte--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Playbook de Suporte — [Feature]
-
-## Visao geral da feature
-[2-3 frases para contextualizar o suporte]
-
-## Problemas esperados e respostas
-| Sintoma do usuario | Causa provavel | Acao do suporte | Escalacao |
-|-------------------|---------------|-----------------|-----------|
-| [sintoma] | [causa] | [acao] | [se persistir → quem] |
-
-## Perguntas frequentes (FAQ)
-1. **[pergunta]**: [resposta]
-
-## Criterios de escalacao
-| Severidade | Criterio | Para quem | SLA resposta |
-|-----------|---------|-----------|-------------|
-| P1 | Perda de dados ou acesso | Eng on-call | 15min |
-| P2 | Feature nao funciona | Eng team | 2h |
-| P3 | Duvida ou melhoria | Backlog | Proximo sprint |
-```
-
----
-
-## TMPL-024: Comunicacao aos Usuarios
-**Estagio**: 0.9 | **Arquivo**: `0.9-comunicacao--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Comunicacao de Lancamento — [Feature]
-
-## In-app notification (curta)
-**Titulo**: [titulo]
-**Corpo**: [2-3 frases sobre o que mudou e o beneficio]
-**CTA**: [ex: "Experimentar agora"]
-
-## Email de lancamento
-**Assunto**: [assunto]
-**Preview text**: [primeira linha]
-**Corpo**:
-Ola [nome],
-[Paragrafo 1: o que lancamos e por que]
-[Paragrafo 2: como funciona em 2-3 passos]
-[Paragrafo 3: CTA + onde buscar ajuda]
-
-## Notas para CS/Vendas (enablement interno)
-- **O que e**: [1 frase]
-- **Para quem**: [segmento/persona]
-- **Pitch de valor**: [1-2 frases]
-- **Objecoes comuns**: [objecao → resposta]
-- **Demo**: [link ou roteiro simplificado]
-```
-
----
-
-## TMPL-025: Relatorio Pos-Release
-**Estagio**: 0.10 | **Arquivo**: `0.10-relatorio-pos-release--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Relatorio Pos-Release — [Feature]
-
-**Periodo de observacao**: [data inicio] a [data fim]
-
-## Hipotese vs Realidade
-| Metrica | Meta | Resultado | Delta | Veredicto |
-|---------|------|-----------|-------|-----------|
-| [metrica] | [meta] | [real] | [+/-X%] | Atingida / Nao atingida |
-
-## Metricas DORA da entrega
-| Metrica | Valor |
-|---------|-------|
-| Lead time for changes | [tempo] |
-| Deployment frequency | [frequencia] |
-| Change failure rate | [%] |
-| Failed deployment recovery time | [tempo] |
-
-## Feedback qualitativo
-| Fonte | Tema | Sentimento | Volume |
-|-------|------|-----------|--------|
-| [fonte] | [tema] | [positivo/negativo] | [N tickets] |
-
-## Incidentes
-| Data | Severidade | Descricao | Tempo de resolucao | Causa raiz |
-|------|-----------|-----------|-------------------|-----------|
-| [data] | [P1/P2/P3] | [o que houve] | [tempo] | [causa] |
-
-## Custo por tenant (se aplicavel)
-| Componente | Custo mensal estimado |
-|-----------|---------------------|
-| [infra] | [valor] |
-```
-
----
-
-## TMPL-026: Decisao de Continuidade
-**Estagio**: 0.10 | **Arquivo**: `0.10-decisao-continuidade--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Decisao de Continuidade — [Feature]
-
-## Recomendacao
-**Iterar / Pivotar / Escalar / Encerrar**
-
-## Justificativa
-[Baseada nos dados do relatorio — por que esta decisao]
-
-## Se iterar
-- Ajustes priorizados:
-  1. [ajuste 1 — baseado em dado X]
-  2. [ajuste 2 — baseado em feedback Y]
-
-## Se escalar
-- Fase 2 prevista: [escopo]
-- Investimento adicional: [estimativa]
-
-## Licoes aprendidas
-1. **O que funcionou**: [licao]
-2. **O que nao funcionou**: [licao]
-3. **O que faremos diferente**: [mudanca no processo]
-```
-
----
-
-## TMPL-027: Backlog Atualizado
-**Estagio**: 0.10 | **Arquivo**: `0.10-backlog-atualizado--{YYYYMMDD}--{slug}.md`
-
-```markdown
-# Backlog Atualizado — [Feature]
-
-## Novos itens (originados do aprendizado)
-| ID | User Story | Origem | Prioridade |
-|----|-----------|--------|------------|
-| US-N+1 | [story] | [feedback/dado/incidente] | [P0/P1/P2] |
-
-## Itens repriorizados
-| ID | Story | Prioridade anterior | Nova prioridade | Motivo |
-|----|-------|---------------------|-----------------|--------|
-| [id] | [story] | [antes] | [depois] | [por que] |
-
-## Debitos tecnicos identificados
-| ID | Debito | Impacto se ignorar | Prioridade |
-|----|--------|-------------------|------------|
-| TD-01 | [descricao] | [consequencia] | [P0/P1/P2] |
 ```

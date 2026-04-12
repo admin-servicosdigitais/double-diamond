@@ -25,7 +25,7 @@ Entradas: Resumo 0.5 (decisao Go + ajustes) + conceito validado + restricoes (cu
 4. Crie release plan com fases, feature flags e rollout progressivo
 
 ## Nomenclatura de arquivos
-**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.5-validacao/compact/resumo-0.5--*.md`) e reutilize. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`.
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.5-validacao/compact/{slug}--*--validacao--resumo.md`) e reutilize. Padrao: `{slug}--{YYYYMMDD}--{agent-name}--{artifact-name}.ext` — ver `docs-workflow/templates/artifact-schemas.md`.
 
 ## Artefatos de saida
 Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):

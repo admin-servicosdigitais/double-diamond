@@ -22,8 +22,8 @@ Voce e um gerador de prototipos visuais descartaveis. Seu output e um conjunto d
 
 Entradas obrigatorias (todas existem em `outputs/workflow/0.5-validacao/`):
 1. **Prototipo descritivo completo** — `full/0.5-prototipo--{YYYYMMDD}--{slug}.md` — fonte das telas, fluxos e feedbacks do sistema
-2. **Relatorio de validacao completo** — `full/0.5-relatorio-teste--{YYYYMMDD}--{slug}.md` — fonte dos ajustes *must* que devem aparecer no HTML
-3. **Resumo 0.5** — `compact/resumo-0.5--{YYYYMMDD}--{slug}.md` — fonte do slug herdado, decisao, e confirmacao da pre-condicao
+2. **Relatorio de validacao completo** — `full/{slug}--{YYYYMMDD}--validacao--relatorio-teste.md` — fonte dos ajustes *must* que devem aparecer no HTML
+3. **Resumo 0.5** — `compact/{slug}--{YYYYMMDD}--validacao--resumo.md` — fonte do slug herdado, decisao, e confirmacao da pre-condicao
 
 ## Pre-condicao (bloqueante)
 
@@ -87,14 +87,14 @@ Regra pratica: se o dominio for saude, prefira azul/verde clinico; fintech, azul
 ### Passo 5 — Gerar um HTML por tipo qualificado
 Para cada tipo da lista do Passo 2, gere um arquivo HTML seguindo a estrutura obrigatoria descrita em `docs-workflow/contexts/prototype-visual-guidelines.md`.
 
-**Nomenclatura de arquivo**: `0.5.5-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html`
+**Nomenclatura de arquivo**: `{slug}--{YYYYMMDD}--prototype-visual--{tipo}.html`
 
 Onde `{tipo}` e o nome do tipo de usuario em kebab-case ASCII puro, derivado do cabecalho do fluxo no protótipo (ex: "PWA Doador" → `doador`, "Painel Coordenador" → `coordenador`).
 
 **Salvar em**: `outputs/workflow/0.5.5-prototype-visual/full/`
 
 ### Passo 6 — Gerar Resumo 0.5.5 (side-note)
-Gere o Resumo 0.5.5 conforme formato em `docs-workflow/templates/artifact-summary-format.md` e salve em `outputs/workflow/0.5.5-prototype-visual/compact/resumo-0.5.5--{YYYYMMDD}--{slug}.md`.
+Gere o Resumo 0.5.5 conforme formato em `docs-workflow/templates/artifact-summary-format.md` e salve em `outputs/workflow/0.5.5-prototype-visual/compact/{slug}--{YYYYMMDD}--prototype-visual--resumo.md`.
 
 **IMPORTANTE**: Este resumo NAO e consumido pelo 0.6. Ele e um registro lateral para trackeabilidade e referencia cruzada. O 0.6 continua lendo apenas o Resumo 0.5 intacto. Deixe isso explicito no frontmatter do resumo (campo `entrada_para: "nenhum (side-note)"`).
 
@@ -103,7 +103,7 @@ Gere o Resumo 0.5.5 conforme formato em `docs-workflow/templates/artifact-summar
 - **Slug**: herdado do frontmatter do Resumo 0.5. **NUNCA reinvente**. Se o Resumo 0.5 tem `slug: saude-hematologia-sangue`, use exatamente esse.
 - **Tipo**: kebab-case ASCII, derivado do cabecalho `## Fluxo ... {tipo}`. Exemplos: `doador`, `coordenador`, `professor`, `aluno`, `administrador`.
 - **Data**: a data de execucao do 0.5.5 (nao a data do 0.5).
-- Padrao completo: `0.5.5-prototipo-visual--{tipo}--{YYYYMMDD}--{slug}.html`
+- Padrao completo: `{slug}--{YYYYMMDD}--prototype-visual--{tipo}.html`
 
 ## Criterios de qualidade
 

@@ -26,7 +26,7 @@ Entradas: Resumo 0.3 (problema + metricas) + restricoes tecnicas e de negocio co
 5. Registre arquitetura em alto nivel (referenciando `docs-workflow/contexts/saas-concerns-checklist.md` para multi-tenancy)
 
 ## Nomenclatura de arquivos
-**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.3-framing/compact/resumo-0.3--*.md`) e reutilize. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`.
+**Leia o slug do frontmatter do resumo compacto do estagio anterior** (`outputs/workflow/0.3-framing/compact/{slug}--*--framing--resumo.md`) e reutilize. Padrao: `{slug}--{YYYYMMDD}--{agent-name}--{artifact-name}.ext` — ver `docs-workflow/templates/artifact-schemas.md`.
 
 ## Artefatos de saida
 Gere usando os templates em `docs-workflow/templates/artifact-schemas.md` (nomes de arquivo especificados em cada TMPL):
@@ -42,4 +42,4 @@ Adicionais deste estagio:
 - Conceito descreve a experiencia do usuario, nao so a tecnologia
 
 ## Ao finalizar
-Gere o **Resumo 0.4** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.4-ideacao/compact/` como `resumo-0.4--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter.
+Gere o **Resumo 0.4** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.4-ideacao/compact/` como `{slug}--{YYYYMMDD}--ideacao--resumo.md`. Propague o `slug` no frontmatter.

@@ -26,12 +26,12 @@ Entrada unica: `outputs/workflow/0.1-intake/compact/resumo-0.1--*.md`. Extraia d
 6. **Registrar lacunas explicitas**: o que nao foi possivel encontrar na web e precisara ser obtido via entrevistas ou surveys no 0.2.
 
 ## Nomenclatura de arquivos
-**Leia o slug do frontmatter do resumo compacto do 0.1** (`outputs/workflow/0.1-intake/compact/resumo-0.1--*.md`) e reutilize em todos os artefatos deste estagio. Padrao: `{estagio}-{artefato}--{YYYYMMDD}--{slug}.md` — ver `docs-workflow/templates/artifact-schemas.md`. **O slug permanece estavel ate o 0.10** — nao recriar.
+**Leia o slug do frontmatter do resumo compacto do 0.1** (`outputs/workflow/0.1-intake/compact/{slug}--*--intake--resumo.md`) e reutilize em todos os artefatos deste estagio. Padrao: `{slug}--{YYYYMMDD}--{agent-name}--{artifact-name}.ext` — ver `docs-workflow/templates/artifact-schemas.md`. **O slug permanece estavel ate o 0.6** — nao recriar.
 
 ## Artefatos de saida
 Gere usando os templates em `docs-workflow/templates/artifact-schemas.md`:
-1. **Matriz de Fontes Quantitativas** (TMPL-002A) → salve em `outputs/workflow/0.1.5-sourcing/full/` como `0.1.5-fontes-quantitativas--{YYYYMMDD}--{slug}.md`
-2. **Mapa de Acesso a Usuarios** (TMPL-002B) → salve em `outputs/workflow/0.1.5-sourcing/full/` como `0.1.5-acesso-usuarios--{YYYYMMDD}--{slug}.md`
+1. **Matriz de Fontes Quantitativas** (TMPL-002A) → salve em `outputs/workflow/0.1.5-sourcing/full/` como `{slug}--{YYYYMMDD}--sourcing--fontes-quantitativas.md`
+2. **Mapa de Acesso a Usuarios** (TMPL-002B) → salve em `outputs/workflow/0.1.5-sourcing/full/` como `{slug}--{YYYYMMDD}--sourcing--acesso-usuarios.md`
 
 ## Criterios de qualidade
 Base: ver `docs-workflow/contexts/dod-framework.md` (fase Discovery)
@@ -44,4 +44,4 @@ Adicionais deste estagio:
 - Nenhuma fonte pagante sem preview utilizavel
 
 ## Ao finalizar
-Gere o **Resumo 0.1.5** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.1.5-sourcing/compact/` como `resumo-0.1.5--{YYYYMMDD}--{slug}.md`. Propague o `slug` no frontmatter, com `slug_origem: "0.0"` ou `"0.1"` conforme herdado.
+Gere o **Resumo 0.1.5** (ver `docs-workflow/templates/artifact-summary-format.md`) e salve em `outputs/workflow/0.1.5-sourcing/compact/` como `{slug}--{YYYYMMDD}--sourcing--resumo.md`. Propague o `slug` no frontmatter, com `slug_origem: "0.0"` ou `"0.1"` conforme herdado.

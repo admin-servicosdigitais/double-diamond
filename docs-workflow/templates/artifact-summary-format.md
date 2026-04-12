@@ -10,10 +10,10 @@ Use este formato para comprimir artefatos ao passar de um estagio para o proximo
 Todo resumo compacto salvo em `outputs/workflow/{agent-id}/compact/` segue o padrao:
 
 ```
-resumo-{estagio}--{YYYYMMDD}--{slug}.md
+{slug}--{YYYYMMDD}--{agent-name}--resumo.md
 ```
 
-Regras do slug sao as mesmas descritas em `artifact-schemas.md` (secao "Convencao de nomenclatura de arquivos"). O slug **deve** ser o mesmo usado nos artefatos `/full/` do mesmo estagio, e deve ser herdado do estagio anterior a partir do 0.1.
+Regras do slug e do `{agent-name}` sao as mesmas descritas em `artifact-schemas.md` (secao "Convencao de nomenclatura de arquivos"). O slug **deve** ser o mesmo usado nos artefatos `/full/` do mesmo estagio, e deve ser herdado do estagio anterior a partir do 0.1.
 
 **Frontmatter obrigatorio** em todo resumo, antes do corpo:
 
@@ -28,9 +28,9 @@ artefato_anterior: "{nome do arquivo /full/ que este resumo comprime}"
 ```
 
 **Exemplos de nomes**:
-- `resumo-0.0--20260409--futebol-corrida.md`
-- `resumo-0.1--20260410--plataforma-corredores-amadores.md`
-- `resumo-0.6--20260420--plataforma-corredores-amadores.md`
+- `futebol-corrida--20260409--explorer--resumo.md`
+- `plataforma-corredores-amadores--20260410--intake--resumo.md`
+- `plataforma-corredores-amadores--20260420--definicao--resumo.md`
 
 Quando um estagio tem multiplos artefatos `/full/` (ex: 0.6 gera PRD + Backlog + Arquitetura + Release Plan), o resumo e **unico** por estagio e consolida todos eles — o campo `artefato_anterior` vira uma lista.
 
@@ -121,7 +121,7 @@ Restricoes descobertas: [se houver]
 
 O estagio 0.5.5 (prototipo visual para stakeholders) gera HTMLs clicaveis como side-artifact. Seu resumo compacto existe apenas para trackeabilidade e referencia cruzada — **nao e consumido pelo 0.6**. O 0.6 continua lendo apenas o Resumo 0.5 intacto.
 
-Use este formato no arquivo `outputs/workflow/0.5.5-prototype-visual/compact/resumo-0.5.5--{YYYYMMDD}--{slug}.md`:
+Use este formato no arquivo `outputs/workflow/0.5.5-prototype-visual/compact/{slug}--{YYYYMMDD}--prototype-visual--resumo.md`:
 
 ```
 Oportunidade: OPP-[ID]
@@ -130,7 +130,7 @@ HTMLs gerados: [lista de caminhos relativos completos]
 Design tokens principais: primary=[hex], secondary=[hex], acento=[hex]
 Ajustes must incorporados: [lista 1-3 linhas descrevendo como cada ajuste aparece no HTML]
 Como apresentar: [dica curta, ex: "abrir cada HTML no Chrome com DevTools > Toggle device toolbar no iPhone SE"]
-Fonte: 0.5-prototipo--{YYYYMMDD}--{slug}.md + 0.5-relatorio-teste--{YYYYMMDD}--{slug}.md
+Fonte: {slug}--{YYYYMMDD}--validacao--prototipo.md + {slug}--{YYYYMMDD}--validacao--relatorio-teste.md
 ```
 
 **Frontmatter obrigatorio** (alem dos campos padrao do summary):
@@ -140,53 +140,8 @@ estagio: "0.5.5"
 data: YYYY-MM-DD
 slug: "{slug}"
 slug_origem: "{estagio que definiu o slug}"
-artefato_anterior: ["0.5-prototipo--...md", "0.5-relatorio-teste--...md"]
+artefato_anterior: ["{slug}--...--validacao--prototipo.md", "{slug}--...--validacao--relatorio-teste.md"]
 entrada_para: "nenhum (side-note)"
 ---
 ```
 
-## Resumo 0.6 → entrada para 0.7
-
-```
-Oportunidade: OPP-[ID]
-Feature: [nome]
-Requisitos Must: [RF-01, RF-02, ...] — [1 frase cada]
-Arquitetura: [componentes principais + stack]
-Multi-tenancy: [estrategia]
-Stories prioritarias: [US-01 a US-05 em 1 linha cada]
-Spikes: [se houver]
-```
-
-## Resumo 0.7 → entrada para 0.8
-
-```
-Oportunidade: OPP-[ID]
-Feature: [nome]
-Endpoints criados: [lista METHOD /path]
-Cobertura de testes: [unitarios X%, integracao Y cenarios, E2E Z cenarios]
-Riscos tecnicos: [1-2]
-Decisoes tecnicas chave: [1-2 ADRs resumidos]
-```
-
-## Resumo 0.8 → entrada para 0.9
-
-```
-Oportunidade: OPP-[ID]
-Feature: [nome] v[X.Y.Z]
-Status UAT: Aprovado/Reprovado
-Feature flags: [lista com estado]
-Rollout plan: [staging → canary X% → expand Y% → full]
-Criterios de rollback: [1-2 principais]
-Problemas conhecidos: [se houver]
-```
-
-## Resumo 0.9 → entrada para 0.10
-
-```
-Oportunidade: OPP-[ID]
-Feature: [nome]
-Data go-live: [data]
-Status deploy: [sucesso/incidente]
-Metricas primeiras 24h: [error rate, latencia, adocao]
-Tickets suporte: [N, temas principais]
-```

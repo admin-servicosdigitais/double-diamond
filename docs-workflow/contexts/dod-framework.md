@@ -25,21 +25,8 @@ Criterios base aplicaveis a todos os estagios. Cada agente adiciona criterios es
 - Conceito descreve experiencia do usuario, nao so tecnologia
 - Criterios de go/no-go definidos ANTES dos resultados
 
-### Build (0.6–0.7)
+### Build (0.6)
 - Requisitos funcionais tem criterios de aceitacao (quando/dado/entao)
-- API contracts com request, response e codigos de erro
-- Tenant isolation explicito em cada spec
-- Plano de testes cobre seguranca e multi-tenancy (ver `contexts/saas-concerns-checklist.md`)
-- Documentacao suficiente para outro dev onboardar
-
-### Ship (0.8–0.9)
-- Release notes separam mudanca visivel de mudanca tecnica
-- Rollout e progressivo com criterios de avanco explicitos
-- Rollback tem procedimento passo a passo
-- Comunicacao existe para usuario final E time interno
-
-### Learn (0.10)
-- Todas as metricas de 0.3 tem resultado medido
-- DORA metrics reportadas
-- Decisao de continuidade e explicita e justificada com dados
-- Backlog atualizado com origem rastreavel
+- Arquitetura endereca multi-tenancy, seguranca e observabilidade (ver `contexts/saas-concerns-checklist.md`)
+- Backlog tem stories no formato correto com prioridade explícita
+- Release plan tem rollout progressivo com feature flags
