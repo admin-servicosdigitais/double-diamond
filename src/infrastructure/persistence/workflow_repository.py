@@ -30,6 +30,21 @@ class WorkflowRepository:
         data = json.loads(state_file.read_text(encoding="utf-8"))
         return WorkflowState.model_validate(data)
 
+    def list_workflows(self) -> list[WorkflowState]:
+        workflows: list[WorkflowState] = []
+        for workflow_dir in sorted(self.base_path.iterdir()):
+            if not workflow_dir.is_dir():
+                continue
+
+            state_file = workflow_dir / "state.json"
+            if not state_file.exists():
+                continue
+
+            data = json.loads(state_file.read_text(encoding="utf-8"))
+            workflows.append(WorkflowState.model_validate(data))
+
+        return workflows
+
     def save_stage_input(self, workflow_id: str, stage: str, payload: dict[str, Any]) -> Path:
         stage_dir = self._stage_dir(workflow_id, stage)
         stage_dir.mkdir(parents=True, exist_ok=True)

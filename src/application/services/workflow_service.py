@@ -6,7 +6,7 @@ from typing import Any
 from src.application.services.agent_execution_service import AgentExecutionService
 from src.application.services.prompt_assembler import PromptAssembler
 from src.domain.models.execution import StageExecutionResult
-from src.domain.models.workflow import StageState, WorkflowState
+from src.domain.models.workflow import StageState, StageStatus, WorkflowState
 from src.infrastructure.agents.agno_agent_runner import AgnoAgentRunner
 from src.infrastructure.persistence.repository_protocol import WorkflowRepositoryProtocol
 from src.loaders.agent_markdown_loader import AgentMarkdownLoader
@@ -31,8 +31,20 @@ class WorkflowService:
         )
 
     def create_workflow(self, workflow_id: str, name: str | None = None) -> WorkflowState:
-        workflow = WorkflowState(id=workflow_id, name=name or workflow_id)
+        ordered_agents = sorted(self.agent_loader.load_all(), key=lambda agent: int(agent.stage))
+        stages = [
+            StageState(
+                id=agent.id,
+                name=agent.name,
+                status=StageStatus.DRAFT if index == 0 else StageStatus.PENDING,
+            )
+            for index, agent in enumerate(ordered_agents)
+        ]
+        workflow = WorkflowState(id=workflow_id, name=name or workflow_id, stages=stages)
         return self.repository.create_workflow(workflow)
+
+    def list_workflows(self) -> list[WorkflowState]:
+        return self.repository.list_workflows()
 
     def get_workflow(self, workflow_id: str) -> WorkflowState:
         return self.repository.get_workflow(workflow_id)

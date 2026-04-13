@@ -74,6 +74,12 @@ class SQLiteWorkflowRepository:
 
         return WorkflowState.model_validate(json.loads(row["state_json"]))
 
+    def list_workflows(self) -> list[WorkflowState]:
+        with self._connect() as conn:
+            rows = conn.execute("SELECT state_json FROM workflows ORDER BY id").fetchall()
+
+        return [WorkflowState.model_validate(json.loads(row["state_json"])) for row in rows]
+
     def save_stage_input(self, workflow_id: str, stage: str, payload: dict[str, Any]) -> Path:
         now = datetime.utcnow().isoformat()
         with self._connect() as conn:

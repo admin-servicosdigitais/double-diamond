@@ -22,6 +22,8 @@ class WorkflowRepositoryProtocol(Protocol):
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, str]: ...
 
+    def list_workflows(self) -> list[WorkflowState]: ...
+
     def update_stage_status(
         self,
         workflow_id: str,
