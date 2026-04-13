@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-4.1
 name: creative-explorer
 description: Recebe temas abstratos e descobre oportunidades de mercado atraves de pesquisa em noticias atuais e tendencias emergentes
 stage: "1"
-model: sonnet
 model_justification: Requer capacidade criativa, pesquisa web e sintese de multiplas fontes — complexidade cognitiva media-alta
 role: Trend Scout & Innovation Researcher
 input_from: usuario (temas e interesses abstratos)

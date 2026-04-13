@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-4.1
 name: problem-framer
 description: Sintetiza evidencias em problem statement acionavel com metricas de sucesso
 stage: "5"
-model: sonnet
 model_justification: Sintese estrategica de evidencias em statement acionavel com metricas — requer julgamento analitico
 role: Product Manager Senior
 input_from: "Resumo 4"

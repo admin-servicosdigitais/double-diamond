@@ -1,6 +1,6 @@
 import os
 
-from src.domain.models.agent_definition import AgentDefinition
+from src.domain.models.agent_definition import AgentDefinition, ProviderEnum
 from src.infrastructure.agents.tool_registry import ToolRegistry
 
 
@@ -38,8 +38,14 @@ class AgnoAgentRunner:
         return self._extract_response_text(response)
 
     def _build_agent_kwargs(self, agent_definition: AgentDefinition) -> dict:
+        provider = self._resolve_provider(agent_definition.provider)
+        model_id = agent_definition.model or os.getenv("AGNO_DEFAULT_MODEL", "gpt-4")
+
+        self._validate_api_key(provider)
+        model = self._resolve_model(provider, model_id)
+
         agent_kwargs = {
-            "model": agent_definition.model,
+            "model": model,
             "name": agent_definition.name,
             "description": agent_definition.description,
             "instructions": agent_definition.instructions_md,
@@ -50,6 +56,51 @@ class AgnoAgentRunner:
             agent_kwargs["tools"] = tools
 
         return agent_kwargs
+
+    def _resolve_provider(self, provider: ProviderEnum | None) -> ProviderEnum:
+        if provider is not None:
+            return provider
+
+        default_provider = os.getenv("AGNO_DEFAULT_PROVIDER", "openai").strip().lower()
+        try:
+            return ProviderEnum(default_provider)
+        except ValueError as exc:
+            raise ValueError(
+                f"AGNO_DEFAULT_PROVIDER '{default_provider}' is inválido. "
+                f"Use um dos valores: {[item.value for item in ProviderEnum]}"
+            ) from exc
+
+    def _validate_api_key(self, provider: ProviderEnum) -> None:
+        env_keys = {
+            ProviderEnum.OPENAI: "OPENAI_API_KEY",
+            ProviderEnum.ANTHROPIC: "ANTHROPIC_API_KEY",
+            ProviderEnum.GOOGLE: "GOOGLE_API_KEY",
+        }
+        key_name = env_keys.get(provider)
+        if key_name and not os.getenv(key_name):
+            raise RuntimeError(
+                f"Chave de API ausente para o provedor '{provider.value}'. "
+                f"Defina a variável de ambiente {key_name}."
+            )
+
+    def _resolve_model(self, provider: ProviderEnum, model_id: str) -> object:
+        if provider == ProviderEnum.OPENAI:
+            from agno.models.openai import OpenAIChat
+
+            return OpenAIChat(id=model_id)
+        if provider == ProviderEnum.ANTHROPIC:
+            from agno.models.anthropic import Claude
+
+            return Claude(id=model_id)
+        if provider == ProviderEnum.GOOGLE:
+            from agno.models.google import Gemini
+
+            return Gemini(id=model_id)
+
+        raise ValueError(
+            f"Provedor '{provider.value}' não suportado. "
+            f"Suporte atual: {[item.value for item in ProviderEnum]}"
+        )
 
     def _run_deep_research(self, agno_agent: object, prompt: str, max_steps: int) -> str:
         intermediate_outputs: list[str] = []

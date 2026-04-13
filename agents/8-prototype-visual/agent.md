@@ -1,8 +1,9 @@
 ---
+provider: anthropic
+model: claude-4
 name: prototype-visual-generator
 description: Gera HTMLs single-file clicaveis (Tailwind CDN + Alpine) para apresentacao a stakeholders
 stage: "8"
-model: sonnet
 model_justification: Geracao de HTML estruturado com design tokens + interatividade declarativa Alpine — exige raciocinio de design, nao calculo pesado
 role: Gerador de prototipo visual descartavel para stakeholder preview
 input_from: "7-prototipo (full) + 7-relatorio-teste (full) + Resumo 7 (compact)"

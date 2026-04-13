@@ -42,6 +42,7 @@ class SlugService:
                 normalized = self._normalize_candidate(value)
                 if normalized:
                     return normalized
+            return None
 
         return self._normalize_candidate(user_input)
 

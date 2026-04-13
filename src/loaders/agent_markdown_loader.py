@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from src.domain.models.agent_definition import AgentDefinition
+from src.domain.models.agent_definition import AgentDefinition, ProviderEnum
 
 
 class AgentMarkdownLoader:
@@ -30,6 +30,19 @@ class AgentMarkdownLoader:
         raw_content = file_path.read_text(encoding="utf-8")
         metadata, instructions_md = self._split_frontmatter(raw_content)
 
+        raw_provider = metadata.get("provider")
+        provider = None
+        if raw_provider is not None:
+            if isinstance(raw_provider, str):
+                raw_provider = raw_provider.strip()
+            try:
+                provider = ProviderEnum(raw_provider)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Invalid provider '{raw_provider}' in {file_path}. "
+                    f"Supported providers: {[item.value for item in ProviderEnum]}"
+                ) from exc
+
         return AgentDefinition(
             id=file_path.parent.name,
             stage=str(metadata.get("stage", "")),
@@ -37,6 +50,7 @@ class AgentMarkdownLoader:
             description=str(metadata.get("description", "")),
             role=str(metadata.get("role", "")),
             model=str(metadata.get("model", "")),
+            provider=provider,
             summary_format=str(metadata.get("summary_format", "")),
             instructions_md=instructions_md,
             tools=self._parse_tools(metadata.get("tools")),

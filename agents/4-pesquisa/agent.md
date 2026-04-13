@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-4.1
 name: problem-researcher
 description: Planeja e executa pesquisa gerando evidencias, mapa de dores e jornada atual
 stage: "4"
-model: sonnet
 model_justification: Sintese analitica de multiplas fontes de dados e priorizacao — requer raciocinio medio
 role: UX Researcher Senior
 input_from: "Resumo 2 + Resumo 3"
