@@ -30,7 +30,7 @@ class WorkflowService:
             agent_runner=self.agent_runner,
         )
 
-    def create_workflow(self, workflow_id: str, name: str | None = None) -> WorkflowState:
+    def create_workflow(self, workflow_id: str, name: str | None = None, words: list[str] | None = None) -> WorkflowState:
         ordered_agents = sorted(self.agent_loader.load_all(), key=lambda agent: int(agent.stage))
         stages = [
             StageState(
@@ -41,7 +41,12 @@ class WorkflowService:
             for index, agent in enumerate(ordered_agents)
         ]
         workflow = WorkflowState(id=workflow_id, name=name or workflow_id, stages=stages)
-        return self.repository.create_workflow(workflow)
+        self.repository.create_workflow(workflow)
+        
+        if words:
+            self.run_stage(workflow_id, "1-explorer", {"words": words})
+        
+        return self.repository.get_workflow(workflow_id)
 
     def list_workflows(self) -> list[WorkflowState]:
         return self.repository.list_workflows()

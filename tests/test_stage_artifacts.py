@@ -32,8 +32,7 @@ def client_and_service(tmp_path: Path, request: pytest.FixtureRequest) -> tuple[
 
 def _prepare_stage_with_outputs(service: WorkflowService) -> tuple[str, str, str]:
     workflow_id = "wf-artifacts"
-    service.create_workflow(workflow_id)
-    service.run_stage(workflow_id, "1-explorer", {"temas": ["saude"]})
+    service.create_workflow(workflow_id, words=["saude"])
     outputs = service.get_stage_outputs(workflow_id, "1-explorer")
     artifact = next(path.split("/")[-1] for path in outputs["full_output_paths"] if "resumo" in path.lower())
     return workflow_id, "1-explorer", artifact

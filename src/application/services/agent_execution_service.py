@@ -121,7 +121,7 @@ class AgentExecutionService:
             return [item.strip() for item in user_input.split(",") if item.strip()]
 
         if isinstance(user_input, dict):
-            for key in ("temas", "themes", "topicos", "topics"):
+            for key in ("words", "temas", "themes", "topicos", "topics"):
                 value = user_input.get(key)
                 if isinstance(value, list):
                     return [str(item).strip() for item in value if str(item).strip()]

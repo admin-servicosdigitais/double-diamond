@@ -1,7 +1,10 @@
+import logging
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
 
 from src.application.services.workflow_service import WorkflowService
 from src.domain.models.execution import StageExecutionResult
@@ -15,6 +18,7 @@ workflow_service = WorkflowService(repository=build_workflow_repository())
 class CreateWorkflowRequest(BaseModel):
     workflow_id: str
     name: str | None = None
+    words: list[str]
 
 
 class RunStageRequest(BaseModel):
@@ -36,10 +40,23 @@ def list_workflows() -> list[WorkflowState]:
 
 @router.post("", response_model=WorkflowState)
 def create_workflow(payload: CreateWorkflowRequest) -> WorkflowState:
+    logger.info(f"POST /workflows - Payload recebido: {payload}")
     try:
-        return workflow_service.create_workflow(payload.workflow_id, payload.name)
+        logger.info(f"Iniciando create_workflow com id={payload.workflow_id}, words={payload.words}")
+        result = workflow_service.create_workflow(payload.workflow_id, payload.name, payload.words)
+        logger.info(f"create_workflow sucedeu para {payload.workflow_id}")
+        return result
+    except FileNotFoundError as exc:
+        logger.error(f"FileNotFoundError em create_workflow: {exc}")
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        logger.error(f"ValueError em create_workflow: {exc}")
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        import traceback
+        error_detail = f"{type(exc).__name__}: {str(exc)}\n{traceback.format_exc()}"
+        logger.error(f"Erro não tratado em create_workflow: {error_detail}")
+        raise HTTPException(status_code=400, detail=error_detail) from exc
 
 
 @router.get("/{workflow_id}", response_model=WorkflowState)
@@ -58,6 +75,10 @@ def run_stage(workflow_id: str, stage: str, payload: RunStageRequest) -> StageEx
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        import traceback
+        error_detail = f"{type(exc).__name__}: {str(exc)}\n{traceback.format_exc()}"
+        raise HTTPException(status_code=400, detail=error_detail) from exc
 
 
 @router.post("/{workflow_id}/stages/{stage}/approve", response_model=WorkflowState)
