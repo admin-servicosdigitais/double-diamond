@@ -214,6 +214,72 @@ class SQLiteWorkflowRepository:
             "metadata": json.loads(row["metadata_json"]),
         }
 
+    def get_stage_artifact(self, workflow_id: str, stage: str, artifact: str) -> dict[str, Any]:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT full_outputs_json, metadata_json FROM stage_outputs WHERE workflow_id = ? AND stage = ?",
+                (workflow_id, stage),
+            ).fetchone()
+
+        if row is None:
+            raise FileNotFoundError(f"Stage '{stage}' not found in workflow '{workflow_id}'")
+
+        full_outputs = json.loads(row["full_outputs_json"])
+        if artifact not in full_outputs:
+            raise FileNotFoundError(f"Artifact '{artifact}' not found in stage '{stage}' for workflow '{workflow_id}'")
+
+        return {
+            "workflow_id": workflow_id,
+            "stage": stage,
+            "artifact": artifact,
+            "content": str(full_outputs[artifact]),
+            "metadata": json.loads(row["metadata_json"]),
+        }
+
+    def update_stage_artifact(self, workflow_id: str, stage: str, artifact: str, content: str) -> dict[str, Any]:
+        with self._connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute(
+                "SELECT compact_output_text, full_outputs_json, metadata_json FROM stage_outputs WHERE workflow_id = ? AND stage = ?",
+                (workflow_id, stage),
+            ).fetchone()
+
+            if row is None:
+                conn.execute("ROLLBACK")
+                raise FileNotFoundError(f"Stage '{stage}' not found in workflow '{workflow_id}'")
+
+            full_outputs = json.loads(row["full_outputs_json"])
+            if artifact not in full_outputs:
+                conn.execute("ROLLBACK")
+                raise FileNotFoundError(f"Artifact '{artifact}' not found in stage '{stage}' for workflow '{workflow_id}'")
+
+            full_outputs[artifact] = content
+            summary_key = self._find_summary_key(full_outputs)
+            compact_output = str(full_outputs[summary_key]) if summary_key else str(row["compact_output_text"])
+
+            metadata = json.loads(row["metadata_json"])
+            metadata["updated_at"] = datetime.utcnow().isoformat()
+
+            now = datetime.utcnow().isoformat()
+            conn.execute(
+                """
+                UPDATE stage_outputs
+                SET compact_output_text = ?, full_outputs_json = ?, metadata_json = ?, updated_at = ?
+                WHERE workflow_id = ? AND stage = ?
+                """,
+                (
+                    compact_output,
+                    json.dumps(full_outputs, ensure_ascii=False),
+                    json.dumps(metadata, ensure_ascii=False),
+                    now,
+                    workflow_id,
+                    stage,
+                ),
+            )
+            conn.execute("COMMIT")
+
+        return self.get_stage_artifact(workflow_id, stage, artifact)
+
     def read_stage_compact_output(self, workflow_id: str, stage: str) -> str | None:
         with self._connect() as conn:
             row = conn.execute(
@@ -241,3 +307,10 @@ class SQLiteWorkflowRepository:
             return None
 
         return {str(k): str(v) for k, v in outputs.items()} or None
+
+    @staticmethod
+    def _find_summary_key(full_outputs: dict[str, Any]) -> str | None:
+        for key in sorted(full_outputs.keys()):
+            if "resumo" in str(key).lower():
+                return key
+        return None

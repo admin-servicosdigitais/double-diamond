@@ -141,18 +141,61 @@ curl "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs"
 ```
 
 ## Endpoints principais
-- `GET /health`
-- `GET /agents`
-- `GET /agents/{agent_id}`
-- `POST /workflows`
-- `GET /workflows`
-- `GET /workflows/{workflow_id}`
-- `POST /workflows/{workflow_id}/stages/{stage}/run`
-- `POST /workflows/{workflow_id}/stages/{stage}/approve`
-- `POST /workflows/{workflow_id}/stages/{stage}/next`
-- `GET /workflows/{workflow_id}/stages/{stage}`
-- `GET /workflows/{workflow_id}/stages/{stage}/outputs`
-- `GET /workflows/{workflow_id}/agents/{agent_code}/latest-output`
+
+### Saúde e catálogo de agentes
+| Método | Endpoint | Descrição |
+|---|---|---|
+| `GET` | `/health` | Healthcheck simples (`{"status": "ok"}`) |
+| `GET` | `/agents` | Lista todos os agentes carregados de `agents/*/agent.md` |
+| `GET` | `/agents/{agent_id}` | Retorna o agente por id (ex.: `1-explorer`) |
+
+### Workflows
+| Método | Endpoint | Descrição |
+|---|---|---|
+| `POST` | `/workflows` | Cria um workflow |
+| `GET` | `/workflows` | Lista todos os workflows persistidos |
+| `GET` | `/workflows/{workflow_id}` | Busca um workflow específico |
+| `POST` | `/workflows/{workflow_id}/stages/{stage}/run` | Executa um estágio específico |
+| `POST` | `/workflows/{workflow_id}/stages/{stage}/approve` | Aprova manualmente um estágio |
+| `POST` | `/workflows/{workflow_id}/stages/{stage}/next` | Executa o próximo estágio (se o atual estiver aprovado) |
+| `GET` | `/workflows/{workflow_id}/stages/{stage}` | Consulta estado do estágio |
+| `GET` | `/workflows/{workflow_id}/stages/{stage}/outputs` | Retorna saída compact/full e metadados do estágio |
+| `GET` | `/workflows/{workflow_id}/stages/{stage}/outputs/{artifact}` | Retorna conteúdo e metadados de um artefato específico |
+| `PATCH` | `/workflows/{workflow_id}/stages/{stage}/outputs/{artifact}` | Atualiza conteúdo do artefato (`{"content": "..."}`) quando o stage está em `awaiting_human_approval` |
+| `GET` | `/workflows/{workflow_id}/agents/{agent_code}/latest-output` | Retorna o último output disponível por código de agente |
+
+> Observação: os endpoints de `run`, `approve`, `next` e `PATCH .../outputs/{artifact}` podem retornar `409 Conflict` quando as pré-condições de estado do workflow não forem atendidas.
+
+## Exemplos adicionais de curl
+
+### Listar workflows
+```bash
+curl "http://127.0.0.1:8000/workflows"
+```
+
+### Executar próximo estágio
+```bash
+curl -X POST "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/next" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"contexto_extra": "rodar próxima etapa"}}'
+```
+
+### Buscar último output por agente
+```bash
+curl "http://127.0.0.1:8000/workflows/wf-demo/agents/7-validacao/latest-output"
+```
+
+### Buscar artefato específico
+```bash
+curl "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md"
+```
+
+### Atualizar artefato específico
+```bash
+curl -X PATCH "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "# Resumo revisado pelo humano"}'
+```
 
 ## Execução do workflow
 
