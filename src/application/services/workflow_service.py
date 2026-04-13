@@ -175,6 +175,16 @@ class WorkflowService:
     def get_stage_outputs(self, workflow_id: str, stage: str) -> dict[str, Any]:
         return self.repository.get_stage_outputs(workflow_id, stage)
 
+    def get_stage_artifact(self, workflow_id: str, stage: str, artifact: str) -> dict[str, Any]:
+        return self.repository.get_stage_artifact(workflow_id, stage, artifact)
+
+    def update_stage_artifact(self, workflow_id: str, stage: str, artifact: str, content: str) -> dict[str, Any]:
+        stage_state = self.get_stage_state(workflow_id, stage)
+        if stage_state.status != "awaiting_human_approval":
+            raise ValueError(f"Stage '{stage}' precisa estar em awaiting_human_approval para editar artefatos.")
+
+        return self.repository.update_stage_artifact(workflow_id, stage, artifact, content)
+
 
     def get_latest_output_by_agent_code(self, workflow_id: str, agent_code: str) -> dict[str, Any]:
         stage = self._resolve_stage_from_agent_code(agent_code)
