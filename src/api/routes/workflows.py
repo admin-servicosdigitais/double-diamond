@@ -25,6 +25,10 @@ class RunNextStageRequest(BaseModel):
     input: str | dict[str, Any] | None = None
 
 
+class UpdateArtifactRequest(BaseModel):
+    content: str
+
+
 @router.get("", response_model=list[WorkflowState])
 def list_workflows() -> list[WorkflowState]:
     return workflow_service.list_workflows()
@@ -92,10 +96,32 @@ def get_stage_outputs(workflow_id: str, stage: str) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@router.get("/{workflow_id}/stages/{stage}/outputs/{artifact}")
+def get_stage_artifact(workflow_id: str, stage: str, artifact: str) -> dict[str, Any]:
+    try:
+        return workflow_service.get_stage_artifact(workflow_id, stage, artifact)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.patch("/{workflow_id}/stages/{stage}/outputs/{artifact}")
+def patch_stage_artifact(
+    workflow_id: str,
+    stage: str,
+    artifact: str,
+    payload: UpdateArtifactRequest,
+) -> dict[str, Any]:
+    try:
+        return workflow_service.update_stage_artifact(workflow_id, stage, artifact, payload.content)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
 @router.get("/{workflow_id}/agents/{agent_code}/latest-output")
 def get_latest_output_by_agent_code(workflow_id: str, agent_code: str) -> dict[str, Any]:
     try:
         return workflow_service.get_latest_output_by_agent_code(workflow_id, agent_code)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
-

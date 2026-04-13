@@ -154,6 +154,46 @@ class WorkflowRepository:
             "metadata": metadata,
         }
 
+    def get_stage_artifact(self, workflow_id: str, stage: str, artifact: str) -> dict[str, Any]:
+        stage_dir = self._stage_dir(workflow_id, stage)
+        if not stage_dir.exists():
+            raise FileNotFoundError(f"Stage '{stage}' not found in workflow '{workflow_id}'")
+
+        artifact_path = stage_dir / "output_full" / artifact
+        if not artifact_path.exists() or not artifact_path.is_file():
+            raise FileNotFoundError(f"Artifact '{artifact}' not found in stage '{stage}' for workflow '{workflow_id}'")
+
+        metadata = self._read_stage_metadata(stage_dir)
+        return {
+            "workflow_id": workflow_id,
+            "stage": stage,
+            "artifact": artifact,
+            "content": artifact_path.read_text(encoding="utf-8"),
+            "metadata": metadata,
+        }
+
+    def update_stage_artifact(self, workflow_id: str, stage: str, artifact: str, content: str) -> dict[str, Any]:
+        stage_dir = self._stage_dir(workflow_id, stage)
+        if not stage_dir.exists():
+            raise FileNotFoundError(f"Stage '{stage}' not found in workflow '{workflow_id}'")
+
+        artifact_path = stage_dir / "output_full" / artifact
+        if not artifact_path.exists() or not artifact_path.is_file():
+            raise FileNotFoundError(f"Artifact '{artifact}' not found in stage '{stage}' for workflow '{workflow_id}'")
+
+        self._write_text_atomic(artifact_path, content)
+
+        summary_file = self._find_summary_artifact(stage_dir / "output_full")
+        if summary_file is not None:
+            compact_content = summary_file.read_text(encoding="utf-8")
+            self._write_text_atomic(stage_dir / "output_compact.md", compact_content)
+
+        metadata = self._read_stage_metadata(stage_dir)
+        metadata["updated_at"] = datetime.utcnow().isoformat()
+        self._write_json_atomic(stage_dir / "metadata.json", metadata)
+
+        return self.get_stage_artifact(workflow_id, stage, artifact)
+
     def read_stage_compact_output(self, workflow_id: str, stage: str) -> str | None:
         compact_path = self._stage_dir(workflow_id, stage) / "output_compact.md"
         if not compact_path.exists():
@@ -177,6 +217,23 @@ class WorkflowRepository:
 
     def _stage_dir(self, workflow_id: str, stage: str) -> Path:
         return self._workflow_dir(workflow_id) / "stages" / stage
+
+    @staticmethod
+    def _find_summary_artifact(output_full_dir: Path) -> Path | None:
+        if not output_full_dir.exists():
+            return None
+
+        for path in sorted(output_full_dir.iterdir()):
+            if path.is_file() and "resumo" in path.name.lower():
+                return path
+        return None
+
+    @staticmethod
+    def _read_stage_metadata(stage_dir: Path) -> dict[str, Any]:
+        metadata_path = stage_dir / "metadata.json"
+        if not metadata_path.exists():
+            return {}
+        return json.loads(metadata_path.read_text(encoding="utf-8"))
 
     @contextmanager
     def _workflow_lock(self, workflow_id: str) -> Iterator[None]:
