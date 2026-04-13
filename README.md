@@ -145,6 +145,7 @@ curl "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs"
 - `GET /agents`
 - `GET /agents/{agent_id}`
 - `POST /workflows`
+- `GET /workflows`
 - `GET /workflows/{workflow_id}`
 - `POST /workflows/{workflow_id}/stages/{stage}/run`
 - `POST /workflows/{workflow_id}/stages/{stage}/approve`

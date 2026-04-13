@@ -25,6 +25,11 @@ class RunNextStageRequest(BaseModel):
     input: str | dict[str, Any] | None = None
 
 
+@router.get("", response_model=list[WorkflowState])
+def list_workflows() -> list[WorkflowState]:
+    return workflow_service.list_workflows()
+
+
 @router.post("", response_model=WorkflowState)
 def create_workflow(payload: CreateWorkflowRequest) -> WorkflowState:
     try:
