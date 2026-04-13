@@ -25,16 +25,16 @@ cp .env-example .env
 
 ### 3) Subir a API
 ```bash
-uvicorn src.main:app --reload
+uvicorn src.main:app --host 127.0.0.1 --port 3333 --reload
 ```
 
 API disponível em:
-- `http://127.0.0.1:8000`
-- Swagger: `http://127.0.0.1:8000/docs`
+- `http://127.0.0.1:3333`
+- Swagger: `http://127.0.0.1:3333/docs`
 
 > Para rodar sem chamadas externas ao Agno, use:
 ```bash
-AGNO_MOCK=1 uvicorn src.main:app --reload
+AGNO_MOCK=1 uvicorn src.main:app --host 127.0.0.1 --port 3333 --reload
 ```
 
 ## Estrutura de pastas
@@ -92,17 +92,17 @@ Para reduzir problemas de concorrência e facilitar evolução para banco, o ser
 ```bash
 WORKFLOW_BACKEND=sqlite \
 WORKFLOW_SQLITE_PATH=data/workflows/workflows.db \
-uvicorn src.main:app --reload
+uvicorn src.main:app --host 127.0.0.1 --port 3333 --reload
 ```
 
 ### Rodando em Docker (SQLite com volume)
 
 ```bash
-docker run --rm -p 8000:8000 \
+docker run --rm -p 3333:3333 \
   -e WORKFLOW_BACKEND=sqlite \
   -e WORKFLOW_SQLITE_PATH=/app/data/workflows/workflows.db \
   -v $(pwd)/data:/app/data \
-  -w /app python:3.12-slim bash -lc "pip install -r requirements.txt && uvicorn src.main:app --host 0.0.0.0 --port 8000"
+  -w /app python:3.12-slim bash -lc "pip install -r requirements.txt && uvicorn src.main:app --host 0.0.0.0 --port 3333"
 ```
 
 > Observação: SQLite melhora controle transacional para um deployment single-instance. Para escala horizontal, prefira Postgres.
@@ -111,7 +111,7 @@ docker run --rm -p 8000:8000 \
 
 ### Criar workflow
 ```bash
-curl -X POST "http://127.0.0.1:8000/workflows" \
+curl -X POST "http://127.0.0.1:3333/workflows" \
   -H "Content-Type: application/json" \
   -d '{
     "workflow_id": "wf-demo",
@@ -121,7 +121,7 @@ curl -X POST "http://127.0.0.1:8000/workflows" \
 
 ### Executar stage
 ```bash
-curl -X POST "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/run" \
+curl -X POST "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/run" \
   -H "Content-Type: application/json" \
   -d '{
     "input": {
@@ -132,12 +132,12 @@ curl -X POST "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/run" \
 
 ### Aprovar stage
 ```bash
-curl -X POST "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/approve"
+curl -X POST "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/approve"
 ```
 
 ### Consultar outputs do stage
 ```bash
-curl "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs"
+curl "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs"
 ```
 
 ## Endpoints principais
@@ -170,29 +170,29 @@ curl "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs"
 
 ### Listar workflows
 ```bash
-curl "http://127.0.0.1:8000/workflows"
+curl "http://127.0.0.1:3333/workflows"
 ```
 
 ### Executar próximo estágio
 ```bash
-curl -X POST "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/next" \
+curl -X POST "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/next" \
   -H "Content-Type: application/json" \
   -d '{"input": {"contexto_extra": "rodar próxima etapa"}}'
 ```
 
 ### Buscar último output por agente
 ```bash
-curl "http://127.0.0.1:8000/workflows/wf-demo/agents/7-validacao/latest-output"
+curl "http://127.0.0.1:3333/workflows/wf-demo/agents/7-validacao/latest-output"
 ```
 
 ### Buscar artefato específico
 ```bash
-curl "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md"
+curl "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md"
 ```
 
 ### Atualizar artefato específico
 ```bash
-curl -X PATCH "http://127.0.0.1:8000/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md" \
+curl -X PATCH "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md" \
   -H "Content-Type: application/json" \
   -d '{"content": "# Resumo revisado pelo humano"}'
 ```
