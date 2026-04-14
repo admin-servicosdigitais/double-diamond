@@ -123,6 +123,13 @@ Cada agente salva seus artefatos em:
 
 O proximo processo le apenas o `/compact/` do anterior (exceto insumos full necessarios do 8).
 
+### Regra do output compacto (obrigatoria)
+1. O `output_compact.md` deve ser a **concatenacao** de um compacto de no maximo **25 linhas por arquivo** existente em `output_full/`.
+2. Limite total: `25 x quantidade_de_arquivos_em_output_full`.
+   - Ex.: 1 arquivo em `output_full/` → `output_compact.md` com no maximo 25 linhas.
+   - Ex.: 3 arquivos em `output_full/` → `output_compact.md` com no maximo 75 linhas.
+3. `output_compact.md` e **informacao interna de sistema** e **nunca deve ser listado** em respostas, indices ou listagens de artefatos.
+
 ## Regras de sessao (economia de tokens)
 
 1. **1 sessao = 1 agente** — contexto limpo por processo
