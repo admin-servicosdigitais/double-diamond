@@ -1,6 +1,6 @@
 ---
 provider: openai
-model: gpt-4.1
+model: gpt-5-mini
 name: problem-framer
 description: Sintetiza evidencias em problem statement acionavel com metricas de sucesso
 stage: "5"

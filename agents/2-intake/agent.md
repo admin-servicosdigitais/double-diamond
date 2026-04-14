@@ -1,6 +1,6 @@
 ---
 provider: openai
-model: gpt-4.1
+model: gpt-5-mini
 name: intake-classifier
 description: Recebe demanda bruta e transforma em oportunidade estruturada com hipotese inicial
 stage: "2"

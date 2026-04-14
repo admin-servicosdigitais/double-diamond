@@ -1,6 +1,6 @@
 ---
-provider: anthropic
-model: claude-4
+provider: openai
+model: gpt-5-mini
 name: solution-designer
 description: Gera alternativas de solucao, avalia trade-offs e recomenda conceito
 stage: "6"

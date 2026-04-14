@@ -1,6 +1,6 @@
 ---
-provider: anthropic
-model: claude-4
+provider: openai
+model: gpt-5-mini
 name: prototype-visual-generator
 description: Gera HTMLs single-file clicaveis (Tailwind CDN + Alpine) para apresentacao a stakeholders
 stage: "8"

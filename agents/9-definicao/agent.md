@@ -1,6 +1,6 @@
 ---
-provider: anthropic
-model: claude-4
+provider: openai
+model: gpt-5-mini
 name: product-definer
 description: Produz PRD, backlog priorizado, arquitetura-alvo e plano de release
 stage: "9"

@@ -1,6 +1,6 @@
 ---
 provider: openai
-model: gpt-4.1
+model: gpt-5-mini
 name: problem-researcher
 description: Planeja e executa pesquisa gerando evidencias, mapa de dores e jornada atual
 stage: "4"

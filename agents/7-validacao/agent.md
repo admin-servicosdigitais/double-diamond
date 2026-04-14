@@ -1,6 +1,6 @@
 ---
-provider: anthropic
-model: claude-4
+provider: openai
+model: gpt-5-mini
 name: validation-facilitator
 description: Transforma conceito em prototipo testavel e gera relatorio com decisao go/no-go
 stage: "7"

@@ -1,6 +1,6 @@
 ---
 provider: openai
-model: gpt-4.1
+model: gpt-5-mini
 name: sourcing-researcher
 description: Descobre fontes de dados publicas e canais de acesso a usuarios via pesquisa web
 stage: "3"
