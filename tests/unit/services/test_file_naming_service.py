@@ -18,6 +18,11 @@ class TestFileNamingService:
         # Should replace spaces with hyphens
         assert "full-output" in result
 
+    def test_build_filename_normalizes_accents_and_symbols(self):
+        service = FileNamingService()
+        result = service.build_filename("my-slug", "1-explorer", "Radar de Oportunidades + Trade-offs")
+        assert result.endswith("--radar-de-oportunidades-trade-offs.md")
+
     def test_build_filename_current_time(self):
         service = FileNamingService()
         result = service.build_filename("slug", "agent", "artifact")

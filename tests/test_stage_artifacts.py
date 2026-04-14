@@ -34,7 +34,7 @@ def _prepare_stage_with_outputs(service: WorkflowService) -> tuple[str, str, str
     workflow_id = "wf-artifacts"
     service.create_workflow(workflow_id, words=["saude"])
     outputs = service.get_stage_outputs(workflow_id, "1-explorer")
-    artifact = next(path.split("/")[-1] for path in outputs["full_output_paths"] if "resumo" in path.lower())
+    artifact = outputs["full_output_paths"][0].split("/")[-1]
     return workflow_id, "1-explorer", artifact
 
 
@@ -49,6 +49,18 @@ def test_get_stage_artifact_returns_content_and_metadata(client_and_service: tup
     assert payload["artifact"] == artifact
     assert payload["content"]
     assert payload["metadata"]["stage"] == stage
+
+
+def test_stage_outputs_follow_agent_artifact_definition(client_and_service: tuple[TestClient, WorkflowService]) -> None:
+    _, service = client_and_service
+    workflow_id = "wf-artifact-schema"
+    service.create_workflow(workflow_id, words=["corrida", "saude"])
+
+    outputs = service.get_stage_outputs(workflow_id, "1-explorer")
+    artifacts = [path.split("/")[-1] for path in outputs["full_output_paths"]]
+
+    assert len(artifacts) == 1
+    assert artifacts[0].endswith("--radar-de-oportunidades.md")
 
 
 def test_patch_stage_artifact_regenerates_compact(client_and_service: tuple[TestClient, WorkflowService]) -> None:

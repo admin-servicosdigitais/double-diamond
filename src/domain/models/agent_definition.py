@@ -22,3 +22,4 @@ class AgentDefinition(BaseModel):
     tools: list[str] = Field(default_factory=list)
     execution_mode: str = "single_pass"
     max_steps: int = 1
+    output_artifacts: list[str] = Field(default_factory=list)

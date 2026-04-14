@@ -159,7 +159,7 @@ curl "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs"
 | `POST` | `/workflows/{workflow_id}/stages/{stage}/approve` | Aprova manualmente um estágio |
 | `POST` | `/workflows/{workflow_id}/stages/{stage}/next` | Executa o próximo estágio (se o atual estiver aprovado) |
 | `GET` | `/workflows/{workflow_id}/stages/{stage}` | Consulta estado do estágio |
-| `GET` | `/workflows/{workflow_id}/stages/{stage}/outputs` | Retorna saída compact/full e metadados do estágio |
+| `GET` | `/workflows/{workflow_id}/stages/{stage}/outputs` | Retorna saída compacta, lista de artefatos full do estágio e metadados |
 | `GET` | `/workflows/{workflow_id}/stages/{stage}/outputs/{artifact}` | Retorna conteúdo e metadados de um artefato específico |
 | `PATCH` | `/workflows/{workflow_id}/stages/{stage}/outputs/{artifact}` | Atualiza conteúdo do artefato (`{"content": "..."}`) quando o stage está em `awaiting_human_approval` |
 | `GET` | `/workflows/{workflow_id}/agents/{agent_code}/latest-output` | Retorna o último output disponível por código de agente |
@@ -187,14 +187,14 @@ curl "http://127.0.0.1:3333/workflows/wf-demo/agents/7-validacao/latest-output"
 
 ### Buscar artefato específico
 ```bash
-curl "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md"
+curl "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--radar-de-oportunidades.md"
 ```
 
 ### Atualizar artefato específico
 ```bash
-curl -X PATCH "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--resumo.md" \
+curl -X PATCH "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--radar-de-oportunidades.md" \
   -H "Content-Type: application/json" \
-  -d '{"content": "# Resumo revisado pelo humano"}'
+  -d '{"content": "# Radar revisado pelo humano"}'
 ```
 
 ## Execução do workflow
