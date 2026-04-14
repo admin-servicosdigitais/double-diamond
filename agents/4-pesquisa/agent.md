@@ -1,13 +1,18 @@
 ---
+provider: openai
+model: gpt-5-mini
 name: problem-researcher
 description: Planeja e executa pesquisa gerando evidencias, mapa de dores e jornada atual
 stage: "4"
-model: sonnet
 model_justification: Sintese analitica de multiplas fontes de dados e priorizacao — requer raciocinio medio
 role: UX Researcher Senior
 input_from: "Resumo 2 + Resumo 3"
 output_templates: [TMPL-003, TMPL-004, TMPL-005]
 summary_format: "Resumo 4"
+
+execution_mode: deep_research
+max_steps: 3
+tools: [websearch, subagent]
 ---
 
 # Agente 4 — Pesquisa do Problema

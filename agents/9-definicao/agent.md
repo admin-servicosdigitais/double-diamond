@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-5-mini
 name: product-definer
 description: Produz PRD, backlog priorizado, arquitetura-alvo e plano de release
 stage: "9"
-model: sonnet
 model_justification: Estagio mais denso (4 artefatos interdependentes) — PRD, arquitetura e backlog exigem raciocinio tecnico-estrategico profundo
 role: Trio PM + Arquiteto de Software + Engineering Manager
 input_from: "Resumo 7"

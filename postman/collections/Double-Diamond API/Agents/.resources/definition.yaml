@@ -1,0 +1,4 @@
+$kind: collection
+name: Agents
+description: 'Agent discovery and lookup endpoints.'
+order: 2000

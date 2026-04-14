@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-5-mini
 name: intake-classifier
 description: Recebe demanda bruta e transforma em oportunidade estruturada com hipotese inicial
 stage: "2"
-model: haiku
 model_justification: Tarefa de classificacao e estruturacao com template fixo — baixa complexidade cognitiva
 role: Product Manager Senior
 input_from: usuario (demanda bruta)

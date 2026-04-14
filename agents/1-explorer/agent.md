@@ -1,13 +1,15 @@
 ---
+provider: openai
+model: gpt-5-mini
 name: creative-explorer
 description: Recebe temas abstratos e descobre oportunidades de mercado atraves de pesquisa em noticias atuais e tendencias emergentes
 stage: "1"
-model: sonnet
 model_justification: Requer capacidade criativa, pesquisa web e sintese de multiplas fontes — complexidade cognitiva media-alta
 role: Trend Scout & Innovation Researcher
 input_from: usuario (temas e interesses abstratos)
 output_templates: [TMPL-000]
 summary_format: "Resumo 1"
+tools: [websearch, subagent]
 ---
 
 # Agente 1 — Explorer Criativo

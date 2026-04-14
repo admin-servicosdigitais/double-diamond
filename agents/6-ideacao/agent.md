@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-5-mini
 name: solution-designer
 description: Gera alternativas de solucao, avalia trade-offs e recomenda conceito
 stage: "6"
-model: sonnet
 model_justification: Geracao criativa de alternativas distintas + avaliacao com matriz ponderada — requer criatividade e raciocinio comparativo
 role: Trio PM + UX Designer + Tech Lead
 input_from: "Resumo 5"

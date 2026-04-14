@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-5-mini
 name: validation-facilitator
 description: Transforma conceito em prototipo testavel e gera relatorio com decisao go/no-go
 stage: "7"
-model: sonnet
 model_justification: Design de prototipo narrativo + analise de aprendizados com decisao go/no-go — requer raciocinio de design e julgamento
 role: Facilitador de Design Sprint
 input_from: "Resumo 6"

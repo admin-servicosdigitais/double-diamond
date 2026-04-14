@@ -1,0 +1,7 @@
+$kind: collection
+name: 'Double-Diamond API'
+description: 'Postman collection for the discovered FastAPI endpoints in the Double-Diamond service.'
+variables:
+  - key: baseUrl
+    value: 'http://localhost:3333'
+    description: 'Base URL for the Double-Diamond FastAPI service.'

@@ -1,79 +1,221 @@
-# SaaS Product Workflow
+# Agent Workflow Orchestrator (FastAPI)
 
-Workflow de 9 processos para construir produtos SaaS AI-First.
-Cada processo e um agente independente. Voce (humano) executa cada passo e valida antes de avancar.
+Orquestrador de workflow de agentes com FastAPI, persistência em filesystem e execução via runtime Agno.
 
-## Estrutura
+## Como subir o projeto
 
-```
-agents/                         ← Configuracao dos agentes
-docs-workflow/                  ← Material de apoio (exemplos, templates, contextos)
-outputs/workflow/{agent}/       ← Saidas geradas (full/ e compact/)
-CLAUDE.md                       ← Orquestrador (carregado automaticamente)
-```
+### 1) Pré-requisitos
+- Python 3.11+
 
-## Numeracao oficial dos processos
-
-A numeracao do workflow passa a ser sequencial e o nome do processo e exatamente o nome do agente:
-
-1. explorer
-2. intake
-3. sourcing
-4. pesquisa
-5. framing
-6. ideacao
-7. validacao
-8. prototype-visual
-9. definicao
-
-## Regras de passagem obrigatorias
-
-- **Validacao humana obrigatoria em todos os processos** antes de avancar.
-- O proximo processo so inicia apos aprovacao explicita do humano no output `compact/` do processo atual.
-- `prototype-visual` (processo 8) deixa de ser opcional e entra como etapa obrigatoria de preview para stakeholders.
-
-## Como usar
-
-### 1. Iniciar o workflow (processo 1 — explorer)
-
-No Claude Code, cole:
-
-```
-Atue conforme o agente definido em agents/1-explorer/agent.md
-
-Temas: [termos ou interesses abstratos, ex: futebol, corrida, saude]
+### 2) Instalação
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-O agente vai gerar os artefatos em `outputs/workflow/1-explorer/full/` e o resumo compacto em `outputs/workflow/1-explorer/compact/`.
+### Variáveis de ambiente
 
-### 2. Intake (processo 2)
+Copie `.env-example` para `.env` e ajuste conforme o backend escolhido:
 
-Use o resumo do explorer para alimentar o intake:
-
-```
-Atue conforme o agente definido em agents/2-intake/agent.md
-
-Leia o resumo compacto em: outputs/workflow/1-explorer/compact/
-
-Selecione a oportunidade [N] do radar
+```bash
+cp .env-example .env
 ```
 
-### 3. Sourcing (processo 3)
 
-```
-Atue conforme o agente definido em agents/3-sourcing/agent.md
-
-Leia o resumo compacto em: outputs/workflow/2-intake/compact/
+### 3) Subir a API
+```bash
+uvicorn src.main:app --host 127.0.0.1 --port 3333 --reload
 ```
 
-### 4. Processos seguintes (4 ao 9)
+API disponível em:
+- `http://127.0.0.1:3333`
+- Swagger: `http://127.0.0.1:3333/docs`
 
-Repita para cada agente, sempre lendo `compact/` do anterior e validando humanamente antes de seguir.
+> Para rodar sem chamadas externas ao Agno, use:
+```bash
+AGNO_MOCK=1 uvicorn src.main:app --host 127.0.0.1 --port 3333 --reload
+```
 
-**Importante:** o processo 9 (`definicao`) continua consumindo o `compact/` do processo 7 (`validacao`). O processo 8 (`prototype-visual`) e obrigatorio para preview e aprovacao de stakeholders, mas nao substitui a entrada tecnica do processo 9.
+## Estrutura de pastas
 
-## Economia de tokens
+```text
+agents/
+  1-explorer/agent.md
+  ...
+  9-definicao/agent.md
 
-- Cada sessao roda 1 agente apenas
-- Entre processos, apenas o resumo compacto e passado
-- Templates e contextos sao carregados sob demanda (nao ficam no prompt)
+src/
+  api/routes/
+  application/services/
+  domain/models/
+  infrastructure/agents/
+  infrastructure/persistence/
+  loaders/
+
+scripts/
+  test_full_workflow_integration.py
+
+tests/
+  test_workflow_approval.py
+  test_workflow_integration.py
+
+data/workflows/
+  {workflow_id}/
+    state.json
+    stages/{stage}/
+      input.json
+      output_full/
+      metadata.json
+```
+
+
+## Backend SQLite (opcional)
+
+### Rodando com Docker Compose
+
+```bash
+cp .env-example .env
+docker compose up --build api
+```
+
+Para executar testes dentro do container (sem depender do ambiente local):
+
+```bash
+docker compose run --rm test
+```
+
+
+Para reduzir problemas de concorrência e facilitar evolução para banco, o serviço agora suporta backend SQLite via variável de ambiente.
+
+```bash
+WORKFLOW_BACKEND=sqlite \
+WORKFLOW_SQLITE_PATH=data/workflows/workflows.db \
+uvicorn src.main:app --host 127.0.0.1 --port 3333 --reload
+```
+
+### Rodando em Docker (SQLite com volume)
+
+```bash
+docker run --rm -p 3333:3333 \
+  -e WORKFLOW_BACKEND=sqlite \
+  -e WORKFLOW_SQLITE_PATH=/app/data/workflows/workflows.db \
+  -v $(pwd)/data:/app/data \
+  -w /app python:3.12-slim bash -lc "pip install -r requirements.txt && uvicorn src.main:app --host 0.0.0.0 --port 3333"
+```
+
+> Observação: SQLite melhora controle transacional para um deployment single-instance. Para escala horizontal, prefira Postgres.
+
+## Exemplos de curl
+
+### Criar workflow
+```bash
+curl -X POST "http://127.0.0.1:3333/workflows" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workflow_id": "wf-demo",
+    "name": "Workflow Demo"
+  }'
+```
+
+### Executar stage
+```bash
+curl -X POST "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/run" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "temas": ["corrida", "saude"]
+    }
+  }'
+```
+
+### Aprovar stage
+```bash
+curl -X POST "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/approve"
+```
+
+### Consultar outputs do stage
+```bash
+curl "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs"
+```
+
+## Endpoints principais
+
+### Saúde e catálogo de agentes
+| Método | Endpoint | Descrição |
+|---|---|---|
+| `GET` | `/health` | Healthcheck simples (`{"status": "ok"}`) |
+| `GET` | `/agents` | Lista todos os agentes carregados de `agents/*/agent.md` |
+| `GET` | `/agents/{agent_id}` | Retorna o agente por id (ex.: `1-explorer`) |
+
+### Workflows
+| Método | Endpoint | Descrição |
+|---|---|---|
+| `POST` | `/workflows` | Cria um workflow |
+| `GET` | `/workflows` | Lista todos os workflows persistidos |
+| `GET` | `/workflows/{workflow_id}` | Busca um workflow específico |
+| `POST` | `/workflows/{workflow_id}/stages/{stage}/run` | Executa um estágio específico |
+| `POST` | `/workflows/{workflow_id}/stages/{stage}/approve` | Aprova manualmente um estágio |
+| `POST` | `/workflows/{workflow_id}/stages/{stage}/next` | Executa o próximo estágio (se o atual estiver aprovado) |
+| `GET` | `/workflows/{workflow_id}/stages/{stage}` | Consulta estado do estágio |
+| `GET` | `/workflows/{workflow_id}/stages/{stage}/outputs` | Retorna saída compacta, lista de artefatos full do estágio e metadados |
+| `GET` | `/workflows/{workflow_id}/stages/{stage}/outputs/{artifact}` | Retorna conteúdo e metadados de um artefato específico |
+| `PATCH` | `/workflows/{workflow_id}/stages/{stage}/outputs/{artifact}` | Atualiza conteúdo do artefato (`{"content": "..."}`) quando o stage está em `awaiting_human_approval` |
+| `GET` | `/workflows/{workflow_id}/agents/{agent_code}/latest-output` | Retorna o último output disponível por código de agente |
+
+> Observação: os endpoints de `run`, `approve`, `next` e `PATCH .../outputs/{artifact}` podem retornar `409 Conflict` quando as pré-condições de estado do workflow não forem atendidas.
+
+## Exemplos adicionais de curl
+
+### Listar workflows
+```bash
+curl "http://127.0.0.1:3333/workflows"
+```
+
+### Executar próximo estágio
+```bash
+curl -X POST "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/next" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"contexto_extra": "rodar próxima etapa"}}'
+```
+
+### Buscar último output por agente
+```bash
+curl "http://127.0.0.1:3333/workflows/wf-demo/agents/7-validacao/latest-output"
+```
+
+### Buscar artefato específico
+```bash
+curl "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--radar-de-oportunidades.md"
+```
+
+### Atualizar artefato específico
+```bash
+curl -X PATCH "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs/produto--2026-04-13--explorer--radar-de-oportunidades.md" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "# Radar revisado pelo humano"}'
+```
+
+## Execução do workflow
+
+- `run` executa um estágio e deixa em `awaiting_human_approval`.
+- `approve` marca estágio como `approved`.
+- `next` só avança quando o estágio atual está `approved`.
+
+Regras especiais implementadas:
+- Stage `8-prototype-visual` inclui compact e full do estágio `7-validacao` no prompt.
+- Stage `9-definicao` usa como entrada principal o compact do estágio `7-validacao`.
+- `output_compact.md` é interno do sistema: não deve ser listado em índices/listagens de artefatos.
+- O `output_compact.md` é formado pela concatenação de até 25 linhas por arquivo em `output_full/` (limite total: `25 x quantidade de arquivos`).
+
+## Testes
+
+### Testes automatizados
+```bash
+pytest -q
+```
+
+### Teste de integração completo (executável)
+```bash
+./scripts/test_full_workflow_integration.py
+```

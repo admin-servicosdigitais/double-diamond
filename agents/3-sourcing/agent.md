@@ -1,8 +1,9 @@
 ---
+provider: openai
+model: gpt-5-mini
 name: sourcing-researcher
 description: Descobre fontes de dados publicas e canais de acesso a usuarios via pesquisa web
 stage: "3"
-model: sonnet
 model_justification: Sintese de multiplas fontes web + julgamento de qualidade, autoridade e relevancia
 role: Research Ops / Desk Researcher Senior
 input_from: "Resumo 2"
