@@ -65,7 +65,6 @@ data/workflows/
     state.json
     stages/{stage}/
       input.json
-      output_compact.md
       output_full/
       metadata.json
 ```
@@ -206,6 +205,8 @@ curl -X PATCH "http://127.0.0.1:3333/workflows/wf-demo/stages/1-explorer/outputs
 Regras especiais implementadas:
 - Stage `8-prototype-visual` inclui compact e full do estágio `7-validacao` no prompt.
 - Stage `9-definicao` usa como entrada principal o compact do estágio `7-validacao`.
+- `output_compact.md` é interno do sistema: não deve ser listado em índices/listagens de artefatos.
+- O `output_compact.md` é formado pela concatenação de até 25 linhas por arquivo em `output_full/` (limite total: `25 x quantidade de arquivos`).
 
 ## Testes
 
