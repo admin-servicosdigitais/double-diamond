@@ -35,13 +35,6 @@ def _stage_input(stage: str) -> dict:
     }
 
 
-def _find_prompt_text(stage_output_paths: list[str]) -> str:
-    for path in stage_output_paths:
-        if path.endswith("--prompt.md"):
-            return Path(path).read_text(encoding="utf-8")
-    raise AssertionError("Prompt artifact not found")
-
-
 def run_full_workflow_assertions(base_path: Path) -> None:
     os.environ["AGNO_MOCK"] = "1"
 
@@ -65,19 +58,6 @@ def run_full_workflow_assertions(base_path: Path) -> None:
         assert (stage_dir / "input.json").exists()
         assert (stage_dir / "output_compact.md").exists()
         assert (stage_dir / "metadata.json").exists()
-
-        if stage == "8-prototype-visual":
-            stage7_compact = service.get_stage_outputs(workflow_id, "7-validacao")["compact_output_text"]
-            prompt_text = _find_prompt_text(outputs["full_output_paths"])
-            assert "# Previous Stage (N-1) Full Outputs" in prompt_text
-            assert stage7_compact[:120] in prompt_text
-
-        if stage == "9-definicao":
-            stage7_compact = service.get_stage_outputs(workflow_id, "7-validacao")["compact_output_text"]
-            stage8_compact = service.get_stage_outputs(workflow_id, "8-prototype-visual")["compact_output_text"]
-            prompt_text = _find_prompt_text(outputs["full_output_paths"])
-            assert stage7_compact[:120] in prompt_text
-            assert stage8_compact[:120] not in prompt_text
 
         service.approve_stage(workflow_id, stage)
 

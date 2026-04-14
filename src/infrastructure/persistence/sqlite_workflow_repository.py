@@ -254,8 +254,8 @@ class SQLiteWorkflowRepository:
                 raise FileNotFoundError(f"Artifact '{artifact}' not found in stage '{stage}' for workflow '{workflow_id}'")
 
             full_outputs[artifact] = content
-            summary_key = self._find_summary_key(full_outputs)
-            compact_output = str(full_outputs[summary_key]) if summary_key else str(row["compact_output_text"])
+            canonical_key = self._find_canonical_key(full_outputs)
+            compact_output = str(full_outputs[canonical_key]) if canonical_key else str(row["compact_output_text"])
 
             metadata = json.loads(row["metadata_json"])
             metadata["updated_at"] = datetime.utcnow().isoformat()
@@ -309,8 +309,18 @@ class SQLiteWorkflowRepository:
         return {str(k): str(v) for k, v in outputs.items()} or None
 
     @staticmethod
-    def _find_summary_key(full_outputs: dict[str, Any]) -> str | None:
-        for key in sorted(full_outputs.keys()):
-            if "resumo" in str(key).lower():
+    def _find_canonical_key(full_outputs: dict[str, Any]) -> str | None:
+        sorted_keys = sorted(str(key) for key in full_outputs.keys())
+
+        for key in sorted_keys:
+            if "resumo" in key.lower():
                 return key
+
+        for key in sorted_keys:
+            if "trade-offs" not in key.lower():
+                return key
+
+        if sorted_keys:
+            return sorted_keys[0]
+
         return None

@@ -183,9 +183,9 @@ class WorkflowRepository:
 
         self._write_text_atomic(artifact_path, content)
 
-        summary_file = self._find_summary_artifact(stage_dir / "output_full")
-        if summary_file is not None:
-            compact_content = summary_file.read_text(encoding="utf-8")
+        canonical_file = self._find_canonical_artifact(stage_dir / "output_full")
+        if canonical_file is not None:
+            compact_content = canonical_file.read_text(encoding="utf-8")
             self._write_text_atomic(stage_dir / "output_compact.md", compact_content)
 
         metadata = self._read_stage_metadata(stage_dir)
@@ -219,13 +219,26 @@ class WorkflowRepository:
         return self._workflow_dir(workflow_id) / "stages" / stage
 
     @staticmethod
-    def _find_summary_artifact(output_full_dir: Path) -> Path | None:
+    def _find_canonical_artifact(output_full_dir: Path) -> Path | None:
         if not output_full_dir.exists():
             return None
 
-        for path in sorted(output_full_dir.iterdir()):
-            if path.is_file() and "resumo" in path.name.lower():
+        files = [path for path in sorted(output_full_dir.iterdir()) if path.is_file()]
+        if not files:
+            return None
+
+        for path in files:
+            if "resumo" in path.name.lower():
                 return path
+
+        for path in files:
+            if "trade-offs" not in path.name.lower():
+                return path
+
+        for path in sorted(output_full_dir.iterdir()):
+            if path.is_file():
+                return path
+
         return None
 
     @staticmethod

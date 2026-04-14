@@ -55,8 +55,8 @@ class AgentExecutionService:
         named_full_outputs = self._build_named_outputs(
             slug=slug,
             agent_id=stage,
-            prompt=prompt,
             output_text=output_text,
+            output_artifacts=agent_definition.output_artifacts,
         )
 
         saved_output = self.repository.save_stage_output(
@@ -78,17 +78,26 @@ class AgentExecutionService:
             next_stage_available=False,
         )
 
-    def _build_named_outputs(self, slug: str, agent_id: str, prompt: str, output_text: str) -> dict[str, str]:
+    def _build_named_outputs(
+        self,
+        slug: str,
+        agent_id: str,
+        output_text: str,
+        output_artifacts: list[str],
+    ) -> dict[str, str]:
         now = datetime.utcnow()
-        prompt_filename = self.file_naming_service.build_filename(slug, agent_id, "prompt", now)
-        response_filename = self.file_naming_service.build_filename(slug, agent_id, "response-full", now)
-        compact_filename = self.file_naming_service.build_filename(slug, agent_id, "resumo", now)
+        artifacts = output_artifacts or ["artifact-principal"]
+        unique_artifacts: list[str] = []
+        for artifact in artifacts:
+            if artifact not in unique_artifacts:
+                unique_artifacts.append(artifact)
 
-        return {
-            prompt_filename: prompt,
-            response_filename: output_text,
-            compact_filename: output_text,
-        }
+        named_outputs: dict[str, str] = {}
+        for artifact in unique_artifacts:
+            filename = self.file_naming_service.build_filename(slug, agent_id, artifact, now)
+            named_outputs[filename] = output_text
+
+        return named_outputs
 
     def _prepare_runtime_context(
         self,

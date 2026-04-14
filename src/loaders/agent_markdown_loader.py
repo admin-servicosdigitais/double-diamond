@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 import yaml
 
@@ -56,6 +57,7 @@ class AgentMarkdownLoader:
             tools=self._parse_tools(metadata.get("tools")),
             execution_mode=str(metadata.get("execution_mode", "single_pass")),
             max_steps=self._parse_max_steps(metadata.get("max_steps")),
+            output_artifacts=self._parse_output_artifacts(instructions_md),
         )
 
     @staticmethod
@@ -104,3 +106,34 @@ class AgentMarkdownLoader:
             raise ValueError("Invalid frontmatter format in agent markdown")
 
         return metadata, body
+
+    @staticmethod
+    def _parse_output_artifacts(instructions_md: str) -> list[str]:
+        heading_pattern = r"^##\s+Artefatos de saida\b"
+        artifact_pattern = r"^\s*\d+\.\s+\*\*(.+?)\*\*"
+
+        lines = instructions_md.splitlines()
+        start_idx: int | None = None
+        for index, line in enumerate(lines):
+            if re.match(heading_pattern, line.strip(), flags=re.IGNORECASE):
+                start_idx = index + 1
+                break
+
+        if start_idx is None:
+            return []
+
+        parsed: list[str] = []
+        for line in lines[start_idx:]:
+            stripped = line.strip()
+            if stripped.startswith("## "):
+                break
+
+            match = re.match(artifact_pattern, stripped)
+            if not match:
+                continue
+
+            artifact_name = match.group(1).strip()
+            if artifact_name:
+                parsed.append(artifact_name)
+
+        return parsed
