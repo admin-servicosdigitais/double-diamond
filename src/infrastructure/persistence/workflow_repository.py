@@ -212,6 +212,29 @@ class WorkflowRepository:
 
         return outputs or None
 
+    def get_stage_quality_gate(self, workflow_id: str, stage: str) -> dict[str, Any] | None:
+        workflow = self.get_workflow(workflow_id)
+        stage_state = next((item for item in workflow.stages if item.id == stage), None)
+        if stage_state is None:
+            raise FileNotFoundError(f"Stage '{stage}' not found in workflow '{workflow_id}'")
+
+        quality_gate = stage_state.metadata.get("quality_gate")
+        if isinstance(quality_gate, dict):
+            return quality_gate
+
+        return None
+
+    def save_stage_quality_gate(self, workflow_id: str, stage: str, quality_gate: dict[str, Any]) -> dict[str, Any]:
+        workflow = self.get_workflow(workflow_id)
+        stage_state = next((item for item in workflow.stages if item.id == stage), None)
+        if stage_state is None:
+            raise FileNotFoundError(f"Stage '{stage}' not found in workflow '{workflow_id}'")
+
+        status = stage_state.status.value if hasattr(stage_state.status, "value") else str(stage_state.status)
+        self.update_stage_status(workflow_id, stage, status, metadata={"quality_gate": quality_gate})
+        updated_quality_gate = self.get_stage_quality_gate(workflow_id, stage)
+        return updated_quality_gate or quality_gate
+
     def _workflow_dir(self, workflow_id: str) -> Path:
         return self.base_path / workflow_id
 

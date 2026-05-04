@@ -1,6 +1,7 @@
 import pytest
 
 from src.application.services.workflow_service import WorkflowService
+from src.domain.models.quality_gate import QualityGateState, QualityGateStatus
 from src.infrastructure.persistence.workflow_repository import WorkflowRepository
 
 
@@ -36,3 +37,47 @@ def test_workflow_advances_only_after_approval(tmp_path) -> None:
 
     updated = service.get_stage_state(workflow_id, "1-explorer")
     assert updated.status == "completed"
+
+
+def test_approval_without_quality_gate_keeps_compatibility(tmp_path) -> None:
+    service = WorkflowService(repository=WorkflowRepository(base_path=tmp_path / "workflows"))
+    workflow_id = "wf-approval-no-gate"
+    service.create_workflow(workflow_id, words=["saude"])
+
+    updated = service.approve_stage(workflow_id, "1-explorer")
+    current = next(item for item in updated.stages if item.id == "1-explorer")
+    assert current.status == "approved"
+
+
+def test_approval_with_pending_quality_gate_is_blocked(tmp_path) -> None:
+    service = WorkflowService(repository=WorkflowRepository(base_path=tmp_path / "workflows"))
+    workflow_id = "wf-approval-pending-gate"
+    service.create_workflow(workflow_id, words=["saude"])
+
+    pending_gate = QualityGateState(
+        status=QualityGateStatus.QUESTIONS_GENERATED,
+        required_questions=["Q1 obrigatória"],
+        questions=["Q1 obrigatória"],
+    )
+    service.save_stage_quality_gate(workflow_id, "1-explorer", pending_gate)
+
+    with pytest.raises(ValueError, match="Quality Gate pendente"):
+        service.approve_stage(workflow_id, "1-explorer")
+
+
+def test_approval_with_answered_quality_gate_works(tmp_path) -> None:
+    service = WorkflowService(repository=WorkflowRepository(base_path=tmp_path / "workflows"))
+    workflow_id = "wf-approval-answered-gate"
+    service.create_workflow(workflow_id, words=["saude"])
+
+    answered_gate = QualityGateState(
+        status=QualityGateStatus.ANSWERED,
+        required_questions=["Q1 obrigatória"],
+        questions=["Q1 obrigatória"],
+        answers=[{"question_id": "q1", "answer": "respondida"}],
+    )
+    service.save_stage_quality_gate(workflow_id, "1-explorer", answered_gate)
+
+    updated = service.approve_stage(workflow_id, "1-explorer")
+    current = next(item for item in updated.stages if item.id == "1-explorer")
+    assert current.status == "approved"
