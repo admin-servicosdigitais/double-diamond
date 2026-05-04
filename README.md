@@ -208,6 +208,23 @@ Regras especiais implementadas:
 - `output_compact.md` é interno do sistema: não deve ser listado em índices/listagens de artefatos.
 - O `output_compact.md` é formado pela concatenação de até 25 linhas por arquivo em `output_full/` (limite total: `25 x quantidade de arquivos`).
 
+
+## Skill de Quality Gate
+
+A skill de Quality Gate formaliza o papel de interrogador entre stages do Double Diamond antes da aprovação humana.
+
+- Local: `skills/quality-gate/SKILL.md`
+- Status: ainda **não integrada** a LLM/Agno nesta etapa.
+- Uso futuro: será utilizada em etapa posterior pelo `QualityGateService` para orientar avaliação e perguntas.
+
+
+## Quality Gate Intelligence Modes
+
+O Quality Gate suporta dois modos de execução, sem alterar os endpoints existentes:
+
+- `AGNO_MOCK=1` -> **deterministic mode** (rule-based atual, compatível com comportamento legado).
+- `AGNO_MOCK=0` (ou diferente de `1`) -> **skill + LLM mode** usando `skills/quality-gate/SKILL.md` via runtime Agno, com fallback automático para o modo determinístico em caso de erro/timeout/JSON inválido.
+
 ## Testes
 
 ### Testes automatizados
