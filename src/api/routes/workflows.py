@@ -1,15 +1,25 @@
 import logging
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Path
 from pydantic import BaseModel
-
-logger = logging.getLogger(__name__)
 
 from src.application.services.workflow_service import WorkflowService
 from src.domain.models.execution import StageExecutionResult
 from src.domain.models.workflow import StageState, WorkflowState
 from src.infrastructure.persistence.repository_factory import build_workflow_repository
+
+# Identificador canônico do estágio: <número>-<slug-do-agente> (ex: "2-intake").
+# Validação no path param falha com 422 se o cliente enviar formato antigo (ex: "2").
+StageId = Annotated[
+    str,
+    Path(
+        pattern=r"^\d+-[a-z][a-z0-9-]*$",
+        description="Identificador composto do estágio no formato <número>-<slug> (ex: 2-intake).",
+    ),
+]
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 workflow_service = WorkflowService(repository=build_workflow_repository())
@@ -89,7 +99,7 @@ def get_workflow(workflow_id: str) -> WorkflowState:
 
 
 @router.post("/{workflow_id}/stages/{stage}/run", response_model=StageExecutionResult)
-def run_stage(workflow_id: str, stage: str, payload: RunStageRequest) -> StageExecutionResult:
+def run_stage(workflow_id: str, stage: StageId, payload: RunStageRequest) -> StageExecutionResult:
     try:
         return workflow_service.run_stage(workflow_id, stage, payload.input)
     except FileNotFoundError as exc:
@@ -103,7 +113,7 @@ def run_stage(workflow_id: str, stage: str, payload: RunStageRequest) -> StageEx
 
 
 @router.post("/{workflow_id}/stages/{stage}/approve", response_model=WorkflowState)
-def approve_stage(workflow_id: str, stage: str) -> WorkflowState:
+def approve_stage(workflow_id: str, stage: StageId) -> WorkflowState:
     try:
         return workflow_service.approve_stage(workflow_id, stage)
     except FileNotFoundError as exc:
@@ -113,7 +123,7 @@ def approve_stage(workflow_id: str, stage: str) -> WorkflowState:
 
 
 @router.post("/{workflow_id}/stages/{stage}/next", response_model=StageExecutionResult)
-def run_next_stage(workflow_id: str, stage: str, payload: RunNextStageRequest) -> StageExecutionResult:
+def run_next_stage(workflow_id: str, stage: StageId, payload: RunNextStageRequest) -> StageExecutionResult:
     try:
         return workflow_service.run_next_stage(workflow_id, stage, payload.input)
     except FileNotFoundError as exc:
@@ -123,7 +133,7 @@ def run_next_stage(workflow_id: str, stage: str, payload: RunNextStageRequest) -
 
 
 @router.post("/{workflow_id}/stages/{stage}/clarify", response_model=ClarifyStageResponse)
-def clarify_stage(workflow_id: str, stage: str) -> dict[str, Any]:
+def clarify_stage(workflow_id: str, stage: StageId) -> dict[str, Any]:
     try:
         return workflow_service.clarify_stage(workflow_id, stage)
     except FileNotFoundError as exc:
@@ -133,7 +143,7 @@ def clarify_stage(workflow_id: str, stage: str) -> dict[str, Any]:
 
 
 @router.post("/{workflow_id}/stages/{stage}/clarify/answer")
-def answer_clarify_stage(workflow_id: str, stage: str, payload: ClarifyAnswerRequest) -> dict[str, Any]:
+def answer_clarify_stage(workflow_id: str, stage: StageId, payload: ClarifyAnswerRequest) -> dict[str, Any]:
     try:
         gate = workflow_service.answer_clarify_stage(
             workflow_id,
@@ -148,7 +158,7 @@ def answer_clarify_stage(workflow_id: str, stage: str, payload: ClarifyAnswerReq
 
 
 @router.post("/{workflow_id}/stages/{stage}/clarify/skip")
-def skip_clarify_stage(workflow_id: str, stage: str, payload: ClarifySkipRequest) -> dict[str, Any]:
+def skip_clarify_stage(workflow_id: str, stage: StageId, payload: ClarifySkipRequest) -> dict[str, Any]:
     try:
         gate = workflow_service.skip_clarify_stage(workflow_id, stage, payload.reason)
         return gate.model_dump(mode="json")
@@ -159,7 +169,7 @@ def skip_clarify_stage(workflow_id: str, stage: str, payload: ClarifySkipRequest
 
 
 @router.get("/{workflow_id}/stages/{stage}", response_model=StageState)
-def get_stage(workflow_id: str, stage: str) -> StageState:
+def get_stage(workflow_id: str, stage: StageId) -> StageState:
     try:
         return workflow_service.get_stage_state(workflow_id, stage)
     except FileNotFoundError as exc:
@@ -167,7 +177,7 @@ def get_stage(workflow_id: str, stage: str) -> StageState:
 
 
 @router.get("/{workflow_id}/stages/{stage}/outputs")
-def get_stage_outputs(workflow_id: str, stage: str) -> dict[str, Any]:
+def get_stage_outputs(workflow_id: str, stage: StageId) -> dict[str, Any]:
     try:
         return workflow_service.get_stage_outputs(workflow_id, stage)
     except FileNotFoundError as exc:
@@ -175,7 +185,7 @@ def get_stage_outputs(workflow_id: str, stage: str) -> dict[str, Any]:
 
 
 @router.get("/{workflow_id}/stages/{stage}/outputs/{artifact}")
-def get_stage_artifact(workflow_id: str, stage: str, artifact: str) -> dict[str, Any]:
+def get_stage_artifact(workflow_id: str, stage: StageId, artifact: str) -> dict[str, Any]:
     try:
         return workflow_service.get_stage_artifact(workflow_id, stage, artifact)
     except FileNotFoundError as exc:
@@ -185,7 +195,7 @@ def get_stage_artifact(workflow_id: str, stage: str, artifact: str) -> dict[str,
 @router.patch("/{workflow_id}/stages/{stage}/outputs/{artifact}")
 def patch_stage_artifact(
     workflow_id: str,
-    stage: str,
+    stage: StageId,
     artifact: str,
     payload: UpdateArtifactRequest,
 ) -> dict[str, Any]:

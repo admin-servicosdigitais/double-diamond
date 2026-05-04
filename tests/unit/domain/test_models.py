@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import pytest
 
 from src.domain.models.agent_definition import AgentDefinition, ProviderEnum
 from src.domain.models.execution import StageExecutionRequest, StageExecutionResult

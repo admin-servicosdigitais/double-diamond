@@ -1,4 +1,3 @@
-import pytest
 
 from src.application.services.health_service import HealthService
 from src.domain.models.agent_definition import AgentDefinition

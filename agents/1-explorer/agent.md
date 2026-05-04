@@ -1,6 +1,6 @@
 ---
 provider: openai
-model: gpt-5-mini
+model: gpt-4o
 name: creative-explorer
 description: Recebe temas abstratos e descobre oportunidades de mercado atraves de pesquisa em noticias atuais e tendencias emergentes
 stage: "1"

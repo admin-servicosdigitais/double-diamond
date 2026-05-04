@@ -4,3 +4,6 @@ venv/
 .venv/
 .env
 .coverage
+*.pyc
+.pytest_cache/
+htmlcov/
