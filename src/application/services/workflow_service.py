@@ -5,7 +5,9 @@ from typing import Any
 
 from src.application.services.agent_execution_service import AgentExecutionService
 from src.application.services.prompt_assembler import PromptAssembler
+from src.application.services.quality_gate_service import QualityGateService
 from src.domain.models.execution import StageExecutionResult
+from src.domain.models.quality_gate import QualityGateState, QualityGateStatus
 from src.domain.models.workflow import StageState, StageStatus, WorkflowState
 from src.infrastructure.agents.agno_agent_runner import AgnoAgentRunner
 from src.infrastructure.persistence.repository_protocol import WorkflowRepositoryProtocol
@@ -28,6 +30,10 @@ class WorkflowService:
             repository=self.repository,
             prompt_assembler=self.prompt_assembler,
             agent_runner=self.agent_runner,
+        )
+        self.quality_gate_service = QualityGateService(
+            repository=self.repository,
+            agent_loader=self.agent_loader,
         )
 
     def create_workflow(self, workflow_id: str, name: str | None = None, words: list[str] | None = None) -> WorkflowState:
@@ -113,6 +119,15 @@ class WorkflowService:
         current = self._find_stage_state(workflow, stage)
         if current is None or current.status != "awaiting_human_approval":
             raise ValueError(f"Stage '{stage}' precisa estar em awaiting_human_approval para aprovação.")
+        raw_quality_gate = self.repository.get_stage_quality_gate(workflow_id, stage)
+        if raw_quality_gate:
+            quality_gate = QualityGateState.model_validate(raw_quality_gate)
+            has_required_questions = bool(quality_gate.required_questions)
+            can_approve_with_gate = quality_gate.status in {QualityGateStatus.ANSWERED, QualityGateStatus.SKIPPED}
+            if has_required_questions and not can_approve_with_gate:
+                raise ValueError(
+                    f"Stage '{stage}' possui Quality Gate pendente e não pode ser aprovado antes de answered/skipped."
+                )
 
         updated = self.repository.update_stage_status(
             workflow_id,
@@ -169,6 +184,81 @@ class WorkflowService:
             return "7-validacao"
 
         return self._get_previous_stage(stage)
+
+    def get_stage_quality_gate(self, workflow_id: str, stage: str) -> QualityGateState:
+        stored = self.repository.get_stage_quality_gate(workflow_id, stage)
+        if stored:
+            return QualityGateState.model_validate(stored)
+
+        default_gate = QualityGateState()
+        self.repository.save_stage_quality_gate(workflow_id, stage, default_gate.model_dump(mode="json"))
+        return default_gate
+
+    def save_stage_quality_gate(self, workflow_id: str, stage: str, quality_gate: QualityGateState) -> QualityGateState:
+        payload = quality_gate.model_dump(mode="json")
+        persisted = self.repository.save_stage_quality_gate(workflow_id, stage, payload)
+        return QualityGateState.model_validate(persisted)
+
+    def clarify_stage(self, workflow_id: str, stage: str) -> dict[str, Any]:
+        stage_state = self.get_stage_state(workflow_id, stage)
+        if stage_state.status != "awaiting_human_approval":
+            raise ValueError(f"Stage '{stage}' precisa estar em awaiting_human_approval para clarificação.")
+
+        draft = self.quality_gate_service.generate_for_stage(workflow_id, stage)
+        now = datetime.utcnow()
+        current_gate = self.get_stage_quality_gate(workflow_id, stage)
+        quality_gate = QualityGateState(
+            status=QualityGateStatus.QUESTIONS_GENERATED,
+            required_questions=draft.required_questions,
+            questions=[*draft.required_questions, *draft.optional_questions],
+            answers=current_gate.answers,
+            recommendation=draft.recommendation,
+            created_at=current_gate.created_at,
+            updated_at=now,
+        )
+        self.save_stage_quality_gate(workflow_id, stage, quality_gate)
+
+        return draft.model_dump(mode="json")
+
+    def answer_clarify_stage(self, workflow_id: str, stage: str, answers: list[dict[str, str]]) -> QualityGateState:
+        stage_state = self.get_stage_state(workflow_id, stage)
+        if stage_state.status != "awaiting_human_approval":
+            raise ValueError(f"Stage '{stage}' precisa estar em awaiting_human_approval para responder clarificação.")
+
+        current_gate = self.get_stage_quality_gate(workflow_id, stage)
+        if current_gate.status != QualityGateStatus.QUESTIONS_GENERATED:
+            raise ValueError(f"Stage '{stage}' precisa ter quality gate gerado antes de responder.")
+
+        merged_answers = [item for item in answers if item.get("question_id") and item.get("answer")]
+        answered_gate = QualityGateState(
+            status=QualityGateStatus.ANSWERED,
+            required_questions=current_gate.required_questions,
+            questions=current_gate.questions,
+            answers=merged_answers,
+            recommendation=current_gate.recommendation,
+            skip_reason=None,
+            created_at=current_gate.created_at,
+            updated_at=datetime.utcnow(),
+        )
+        return self.save_stage_quality_gate(workflow_id, stage, answered_gate)
+
+    def skip_clarify_stage(self, workflow_id: str, stage: str, reason: str | None = None) -> QualityGateState:
+        stage_state = self.get_stage_state(workflow_id, stage)
+        if stage_state.status != "awaiting_human_approval":
+            raise ValueError(f"Stage '{stage}' precisa estar em awaiting_human_approval para pular clarificação.")
+
+        current_gate = self.get_stage_quality_gate(workflow_id, stage)
+        skipped_gate = QualityGateState(
+            status=QualityGateStatus.SKIPPED,
+            required_questions=current_gate.required_questions,
+            questions=current_gate.questions,
+            answers=current_gate.answers,
+            recommendation=current_gate.recommendation,
+            skip_reason=reason,
+            created_at=current_gate.created_at,
+            updated_at=datetime.utcnow(),
+        )
+        return self.save_stage_quality_gate(workflow_id, stage, skipped_gate)
 
     def get_stage_state(self, workflow_id: str, stage: str) -> StageState:
         workflow = self.repository.get_workflow(workflow_id)

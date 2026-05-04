@@ -33,6 +33,27 @@ class UpdateArtifactRequest(BaseModel):
     content: str
 
 
+class ClarifyStageResponse(BaseModel):
+    diagnosis: str
+    gaps: list[str]
+    required_questions: list[str]
+    optional_questions: list[str]
+    recommendation: str
+
+
+class ClarifyAnswerItem(BaseModel):
+    question_id: str
+    answer: str
+
+
+class ClarifyAnswerRequest(BaseModel):
+    answers: list[ClarifyAnswerItem]
+
+
+class ClarifySkipRequest(BaseModel):
+    reason: str | None = None
+
+
 @router.get("", response_model=list[WorkflowState])
 def list_workflows() -> list[WorkflowState]:
     return workflow_service.list_workflows()
@@ -95,6 +116,42 @@ def approve_stage(workflow_id: str, stage: str) -> WorkflowState:
 def run_next_stage(workflow_id: str, stage: str, payload: RunNextStageRequest) -> StageExecutionResult:
     try:
         return workflow_service.run_next_stage(workflow_id, stage, payload.input)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.post("/{workflow_id}/stages/{stage}/clarify", response_model=ClarifyStageResponse)
+def clarify_stage(workflow_id: str, stage: str) -> dict[str, Any]:
+    try:
+        return workflow_service.clarify_stage(workflow_id, stage)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.post("/{workflow_id}/stages/{stage}/clarify/answer")
+def answer_clarify_stage(workflow_id: str, stage: str, payload: ClarifyAnswerRequest) -> dict[str, Any]:
+    try:
+        gate = workflow_service.answer_clarify_stage(
+            workflow_id,
+            stage,
+            [item.model_dump() for item in payload.answers],
+        )
+        return gate.model_dump(mode="json")
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.post("/{workflow_id}/stages/{stage}/clarify/skip")
+def skip_clarify_stage(workflow_id: str, stage: str, payload: ClarifySkipRequest) -> dict[str, Any]:
+    try:
+        gate = workflow_service.skip_clarify_stage(workflow_id, stage, payload.reason)
+        return gate.model_dump(mode="json")
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:
